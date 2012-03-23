@@ -1,0 +1,134 @@
+#!/usr/bin/env python
+#
+# Copyright 2012 Dominic Rout
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""
+  Provides full, three-legged authentication with Twitter using CherryPy to generate the needed keys.
+  
+  Your browser should open to a local URL to begin the process.
+
+  Tokens will be automatically saved in the format accepted by this library (YAML).
+"""
+
+import oauth2, urlparse, cherrypy, webbrowser, urllib, sys, yaml, os, shutil
+
+CONFIG_FILE = "config.yaml"
+CONFIG_FILE_TEMPLATE = os.path.join(sys.prefix, "twitter/defaults", CONFIG_FILE)
+
+ACCESS_TOKENS_FILE = "access_tokens.yaml"
+ACCESS_TOKENS_FILE_TEMPLATE = os.path.join(sys.prefix, "twitter/defaults", ACCESS_TOKENS_FILE)
+
+
+class AuthenticateTwitterCherryPy(object):
+  REQUEST_TOKEN_URL = 'http://twitter.com/oauth/request_token'
+  ACCESS_TOKEN_URL = 'http://twitter.com/oauth/access_token'
+  AUTHORIZE_URL = 'http://twitter.com/oauth/authorize'
+
+  def __init__(self, config):
+    self.oauth_consumer_token = config["consumer_token"]
+    self.oauth_consumer_secret = config["consumer_secret"]
+    
+    self.output_file = config.get("access_tokens_file", ACCESS_TOKENS_FILE)
+
+    self.request_token_url = config.get("request_token_url", self.REQUEST_TOKEN_URL)
+    self.access_token_url = config.get("access_token_url", self.ACCESS_TOKEN_URL)
+    self.authorize_url = config.get("authorize_url", self.AUTHORIZE_URL)
+
+  def generate(self):    
+    self.consumer = oauth2.Consumer(self.oauth_consumer_token, self.oauth_consumer_secret)
+    client = oauth2.Client(self.consumer)
+
+    params = {
+      'oauth_callback':"http://localhost:8080/callback"
+    }
+
+    print urllib.urlencode(params)
+    resp, content = client.request(self.request_token_url, "POST", body=urllib.urlencode(params))
+    self.request_token = dict(urlparse.parse_qsl(content))
+
+    if "oauth_token" in self.request_token:
+      raise cherrypy.HTTPRedirect("%s?oauth_token=%s" % (self.authorize_url, self.request_token['oauth_token']))
+    else:
+      raise Exception("Could not generate request token for authentication. Are the keys correct?")
+
+  generate.exposed = True
+
+  def callback(self, oauth_verifier, oauth_token):
+    token = oauth2.Token(self.request_token['oauth_token'], self.request_token['oauth_token_secret'])
+    token.set_verifier(oauth_verifier)
+    client = oauth2.Client(self.consumer, token)
+
+    resp, content = client.request(self.access_token_url, "POST")
+    access_token = dict(urlparse.parse_qsl(content))
+     
+    yield "Access Token: <br />\n"
+
+    yield "    - oauth_consumer_token        = %s  <br />\n" % self.oauth_consumer_token
+    yield "    - oauth_consumer_secret = %s <br />\n" % self.oauth_consumer_secret
+
+
+    yield "    - oauth_token        = %s <br />\n" % access_token['oauth_token']
+    yield "    - oauth_token_secret = %s <br />\n" % access_token['oauth_token_secret']
+    yield "The tokens above have been saved to access_tokens.yaml <br />" 
+    yield "Use C-c on the terminal to end this process." 
+
+
+    output = {access_token['screen_name']: 
+                {"consumer_key": self.oauth_consumer_token, 
+                "consumer_secret": self.oauth_consumer_secret,
+                "access_token_key": access_token['oauth_token'], 
+                "access_token_secret": access_token['oauth_token_secret'],
+                }
+              }
+
+
+    with open(self.output_file, "a") as f:
+      yaml.dump(output, f, default_flow_style=False)
+    
+
+  callback.exposed = True
+
+
+if __name__ == "__main__": 
+  try:
+    with open(CONFIG_FILE) as f:
+      config = yaml.load(f)
+
+    cherrypy.tree.mount(AuthenticateTwitterCherryPy(config["oauth"]))
+    cherrypy.server.socket_port = 8080
+    cherrypy.engine.start()
+    webbrowser.open("http://localhost:8080/generate")
+    cherrypy.engine.block()
+  except IOError:
+    print "Creating configuration files:"
+
+    try:
+      shutil.copy(CONFIG_FILE_TEMPLATE, CONFIG_FILE)
+      print "Created %s" % CONFIG_FILE
+
+    except IOError:
+      raise IOError("Unable to copy file from %s to %s Giving up." % (CONFIG_FILE_TEMPLATE, CONFIG_FILE))
+    
+
+    try:
+      shutil.copy(ACCESS_TOKENS_FILE_TEMPLATE, ACCESS_TOKENS_FILE)
+      print "Created %s" % ACCESS_TOKENS_FILE
+
+    except IOError:
+      raise IOError("Unable to copy file from %s to %s Giving up." % (ACCESS_TOKENS_FILE_TEMPLATE, ACCESS_TOKENS_FILE))
+
+    print "Please update %s to include your Twitter API consumer token and run again." % CONFIG_FILE
+
+    sys.exit()
