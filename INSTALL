@@ -7,3 +7,4 @@ Dependencies include:
 	pyyaml
 	cherrypy
 	oauth2
+	anyjson

@@ -13,5 +13,5 @@ setup(name='Twitter Wrapper',
       data_files=[('twitter', ["twitterwrapper/api.yaml"]),
       	('twitter/defaults', ["config.yaml", "access_tokens.yaml"])
       ],
-      requires=["oauth2", "cherrypy", "pyyaml"]
+      requires=["oauth2", "cherrypy", "pyyaml", "anyjson"]
      )
