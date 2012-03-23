@@ -1,4 +1,3 @@
 *.pyc
 *.DS_Store
-access_tokens.yaml
 build

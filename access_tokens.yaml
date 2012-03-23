@@ -1,0 +1,5 @@
+# some_user_name:
+#   access_token_key: INSERT_KEY_HERE
+#   access_token_secret: INSERT_SECRET_HERE
+#   consumer_key: INSERT_KEY_HERE
+#   consumer_secret: INSERT_SECRET_HERE
