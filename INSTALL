@@ -1,0 +1,9 @@
+To install, run:
+
+	python setup.py install
+
+Dependencies include:	
+
+	pyyaml
+	cherrypy
+	oauth2
