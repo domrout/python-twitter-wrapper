@@ -56,10 +56,10 @@ Getting access tokens
 
 To ease the creation of access tokens for the Twitter API, a script is supplied. Run:
 
-    authenticate_twitter_cherrrypy
+    authenticate_twitter_cherrypy
 
 To create the yaml files which will hold the application configuration. You will need to edit
-config.yaml to reflect you consumer key. If you do not have a consumer key, get one from twitter
+config.yaml to reflect your consumer key. If you do not have a consumer key, get one from twitter
 at https://dev.twitter.com/apps/new
 
 Run the script again; a web browser should open for you to authenticate with Twitter. After 
