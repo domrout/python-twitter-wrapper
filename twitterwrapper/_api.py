@@ -29,6 +29,7 @@ from functools import partial
 from _connection import Connection
 import anyjson, yaml, string, models, os, sys
 from copy import copy
+from _utils import *
 
 class _ApiMethodSpec(object):
   def __init__(self,
@@ -228,7 +229,7 @@ class Api(object):
 
     return target
 
-with open(os.path.join(sys.prefix, "twitter/api.yaml")) as f:
+with open_data("api.yaml") as f:
   TwitterApi = partial(Api, specification=yaml.load(f))
 
 access_tokens = None

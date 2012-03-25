@@ -24,11 +24,24 @@
 
 import oauth2, urlparse, cherrypy, webbrowser, urllib, sys, yaml, os, shutil
 
-CONFIG_FILE = "config.yaml"
-CONFIG_FILE_TEMPLATE = os.path.join(sys.prefix, "twitter/defaults", CONFIG_FILE)
+from shutil import copyfileobj
+from functools import partial
 
+PACKAGE_NAME = "twitterwrapper"
+# Tools for dealing with default files.
+import pkg_resources
+open_data = partial(pkg_resources.resource_stream, PACKAGE_NAME)
+
+def copy_default(filename, to_filename = None):
+  if to_filename is None:
+    to_filename = filename
+
+  with open_data("defaults/%s" % filename) as default:
+    with open(to_filename, "w") as destination:
+      copyfileobj(default, destination)
+
+CONFIG_FILE = "config.yaml"
 ACCESS_TOKENS_FILE = "access_tokens.yaml"
-ACCESS_TOKENS_FILE_TEMPLATE = os.path.join(sys.prefix, "twitter/defaults", ACCESS_TOKENS_FILE)
 
 
 class AuthenticateTwitterCherryPy(object):
@@ -114,21 +127,15 @@ if __name__ == "__main__":
   except IOError:
     print "Creating configuration files:"
 
-    try:
-      shutil.copy(CONFIG_FILE_TEMPLATE, CONFIG_FILE)
-      print "Created %s" % CONFIG_FILE
+    #try: 
+    copy_default(CONFIG_FILE)
+    print "Created %s" % CONFIG_FILE
 
-    except IOError:
-      raise IOError("Unable to copy file from %s to %s Giving up." % (CONFIG_FILE_TEMPLATE, CONFIG_FILE))
+    copy_default(ACCESS_TOKENS_FILE)
+    print "Created %s" % ACCESS_TOKENS_FILE
+    # except IOError:
+    #   raise IOError("Unable to copy file from package. Giving up.")
     
-
-    try:
-      shutil.copy(ACCESS_TOKENS_FILE_TEMPLATE, ACCESS_TOKENS_FILE)
-      print "Created %s" % ACCESS_TOKENS_FILE
-
-    except IOError:
-      raise IOError("Unable to copy file from %s to %s Giving up." % (ACCESS_TOKENS_FILE_TEMPLATE, ACCESS_TOKENS_FILE))
-
     print "Please update %s to include your Twitter API consumer token and run again." % CONFIG_FILE
 
     sys.exit()

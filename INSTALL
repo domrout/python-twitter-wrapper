@@ -8,3 +8,4 @@ Dependencies include:
 	cherrypy
 	oauth2
 	anyjson
+	pkg_resources
