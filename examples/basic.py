@@ -1,0 +1,25 @@
+import twitterwrapper 
+
+# Please make sure you run authenticate_twitter_cherrypy first, to create the API tokens needed.
+api = twitterwrapper.TwitterApi()
+
+# Post an update
+new_status = api.statuses.update("I'm tweeting programmatically!")
+
+# Delete that update.
+new_status.destroy()
+
+# Search for #FML
+search_result = api.search("#FML", rpp=100)
+
+# Print all results
+for result in search_result.results:
+	print result
+
+# Get recent mentions of myself.
+mentions = api.statuses.mentions()
+
+# Reply to the most recent mention. Don't run this if doing so would be ridiculous.
+most_recent = mentions[0]
+# Twitter demands that we manually insert the screen_name of the sender in a reply.
+most_recent.reply("@%s I hear you..." % most_recent.user.screen_name)

@@ -40,11 +40,7 @@ class _ApiModel(object):
     for attribute, value in data.iteritems():
       if attribute in custom_attrs:
         constructor = custom_attrs[attribute] 
-
-        if issubclass(constructor, _ApiModel):
-          setattr(self, attribute, constructor(value, api))
-        else:
-          setattr(self, attribute, constructor(value))
+        setattr(self, attribute, constructor(value))
       else:
         setattr(self, attribute, value)
 
@@ -81,14 +77,18 @@ class SearchResult(_ApiModel):
   def custom_attrs(self):
     return {"results": partial(map, partial(Status, api=self.api))}
 
+  def __repr__(self):
+    return "<Search '%s' %d results>" % (self.query, len(self.results))
 class Status(_ApiModel):  
   def custom_attrs(self):
     return {"user": User,
     "entities": Entities
     }
   def __repr__(self):
-    if self.user:
+    if hasattr(self, "user"):
       result =  "<Status @%s '%s'>" % (self.user.screen_name, self.text[:50] + "..." if len(self.text) > 50 else self.text)
+    elif hasattr(self, "from_user"):
+      result =  "<Status @%s '%s'>" % (self.from_user, self.text[:50] + "..." if len(self.text) > 50 else self.text)
     else:
       result =  "<Status '%s'>" % (self.text[:50] + "..." if len(self.text) > 50 else self.text)
 
