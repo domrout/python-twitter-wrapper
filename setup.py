@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='TwitterWrapper',
       version='0.1',
@@ -11,5 +11,5 @@ setup(name='TwitterWrapper',
       packages=['twitterwrapper'],
       scripts=['scripts/authenticate_twitter_cherrypy'],
       package_data={'twitterwrapper': ['*.yaml', 'defaults/*.yaml']},
-      requires=["oauth2", "cherrypy", "pyyaml", "anyjson", "pkg_resources"]
+      install_requires=["oauth2", "cherrypy", "pyyaml", "anyjson"]
      )

@@ -3,3 +3,5 @@
 build
 /access_tokens.yaml
 /config.yaml
+dist
+*.egg-info
