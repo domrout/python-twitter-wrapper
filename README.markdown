@@ -28,7 +28,7 @@ follows:
       access_token_key="ANONYMISED",
       access_token_secret="MYSTERIOUSLY_ABSENT")
 
-    api = twitterwrapper.TwitterAPI(connection)
+    api = twitterwrapper.Api(connection)
 
 However, it is not recommended for you to give the API keys this way, instead, they can be
 saved in access_tokens.yaml (in your application path):
@@ -47,7 +47,7 @@ If you supply no username, the first api key from the file will be loaded.
 
 For convenience, it is also possible to create an api instance with a single line:
 
-    api = twitterwrapper.TwitterAPI()
+    api = twitterwrapper.Api()
 
 Which will also use the first key from access_tokens.yaml
  

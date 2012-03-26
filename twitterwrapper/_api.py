@@ -197,10 +197,14 @@ class Api(object):
 
     For a full specification of the parts of the API implemented here, please see api.yaml
   """
-  def __init__(self, specification, connection = None):
+  def __init__(self, connection=None, specification = None):
     self._model_apis = {}
 
     connection = connection if connection else config_connection()
+
+    if specification == None:
+      with open_data("api.yaml") as f:
+        specification = yaml.load(f)
 
     self._connection = connection
 
@@ -229,8 +233,6 @@ class Api(object):
 
     return target
 
-with open_data("api.yaml") as f:
-  TwitterApi = partial(Api, specification=yaml.load(f))
 
 access_tokens = None
 KEY_FILE_LOCATION = "access_tokens.yaml"

@@ -1,7 +1,8 @@
 import twitterwrapper 
 
 # Please make sure you run authenticate_twitter_cherrypy first, to create the API tokens needed.
-api = twitterwrapper.TwitterApi()
+api = twitterwrapper.Api()
+
 
 # Post an update
 new_status = api.statuses.update("I'm tweeting programmatically!")
