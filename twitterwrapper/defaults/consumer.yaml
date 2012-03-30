@@ -7,5 +7,3 @@ oauth: # Get keys by going to https://dev.twitter.com/apps/new to register appli
   # request_token_url: http://twitter.com/oauth/request_token
   # access_token_url: http://twitter.com/oauth/access_token
   # authorize_url: http://twitter.com/oauth/authorize
-
-  access_tokens_file: access_tokens.yaml # File in which to save the access tokens.

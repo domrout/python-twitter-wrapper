@@ -355,47 +355,6 @@ class Connection:
     return '%s/%s.json' % (self.base_url, url)
 
 
-  # def FetchURLBound(self,
-  #               url,
-  #               post_data=None,
-  #               default_parameters=dict(),
-  #               process_params=None,
-  #               no_cache=None,
-  #               use_gzip_compression=None, 
-  #               process=None,
-  #               **parameters):
-  #   """Provides an extra argument to allow an endpoint to add default parameters
-  #     when partially applying"""
-
-  #   if not isinstance(post_data, dict):
-  #     default_parameters["id"] = post_data # Not always ideal, but a sensible default.
-  #     post_data = None
-
-  #   if parameters:
-  #     default_parameters.update(parameters)
-
-  #   if process_params:
-  #     default_parameters = dict(map(process_params, default_parameters.iteritems()))
-
-  #   result = self.FetchUrl(url, post_data, default_parameters, no_cache, use_gzip_compression)
-
-  #   if process:
-  #     result = process(result)
-
-  #   return result
-
-  # def BindRequest(self, url, params = dict(), process = None, process_params = None):
-  #   '''Uses partial application to bind a URL and some parameters.
-
-  #   Calling the method will then respond with the API request, data processed
-  #   according to the given function.'''
-  #   url = '%s/%s.json' % (self.base_url, url)
-
-  #   return partial(self.FetchURLBound, 
-  #     url, default_parameters=params, 
-  #     process=process, 
-  #     process_params=process_params)
-
 class _FileCacheError(Exception):
   '''Base exception class for FileCache related errors'''
 

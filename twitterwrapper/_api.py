@@ -68,10 +68,7 @@ class _ApiMethodSpec(object):
   def add_child(self, method, structure):
     parent_structure = {
       "doc": self.doc,
-      "model": self.model,
-      "default_param": self.default_param,
-      "container_id": self.container_id,
-      "post": self.post
+      "model": self.model
     }
 
     structure["method"] = method
@@ -121,7 +118,7 @@ class ApiMethod(object):
         return self._spec.model(result, self._api)
 
   def _prepare_url(self, params):
-    url = self._spec.url
+    url = self.url()
 
     # Combine my parent with the parameters for string substitution.
     p = copy(params)
@@ -132,6 +129,12 @@ class ApiMethod(object):
 
     return self._connection.PrefixURL(url)
   
+  def url(self):
+    return self._spec.url
+
+  def _model(self):
+    return self._spec.model
+
   def __call__(self, default = None, **params):
     """
       Make the specified call to the Twitter API.

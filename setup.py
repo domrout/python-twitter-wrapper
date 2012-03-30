@@ -9,7 +9,7 @@ setup(name='TwitterWrapper',
       author_email='d.rout@sheffield.ac.uk',
       url='http://staffwww.dcs.shef.ac.uk/people/D.Rout/',
       packages=['twitterwrapper'],
-      scripts=['scripts/authenticate_twitter_cherrypy'],
+      scripts=['scripts/authenticate_twitter_cherrypy', 'scripts/authenticate_twitter'],
       package_data={'twitterwrapper': ['*.yaml', 'defaults/*.yaml']},
       install_requires=["oauth2", "cherrypy", "pyyaml", "anyjson"]
      )

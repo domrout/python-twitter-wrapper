@@ -22,6 +22,7 @@ account:
       url: account/verify_credentials
     totals:
       url: account/totals
+      doc: See total tweets etc
 
 statuses:
   model: Status

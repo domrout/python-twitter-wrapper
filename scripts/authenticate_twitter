@@ -15,59 +15,51 @@
 # limitations under the License.
 
 """
-  Provides full, three-legged authentication with Twitter using CherryPy to generate the needed keys.
+  Provides out of bands authentication with Twitter without relying on Cherrypy
   
-  Your browser should open to a local URL to begin the process.
+  Your browser should open to twitter to begin the process.
 
   Tokens will be automatically saved in the format accepted by this library (YAML).
 """
 
-import cherrypy, webbrowser, sys, yaml, os, shutil
+import webbrowser, sys, yaml, os, shutil
 
 from twitterwrapper import access_tokens
 from twitterwrapper._utils import copy_default
 
 CONFIG_FILE = "consumer.yaml"
 
-class AuthenticateTwitterCherryPy(access_tokens.AuthenticationProcess):
+class AuthenticateTwitterOOB(access_tokens.AuthenticationProcess):
   def __init__(self, config):
     access_tokens.AuthenticationProcess.__init__(self, config)
 
-  def generate(self):    
-      raise cherrypy.HTTPRedirect(self.generate_authorize_url("http://localhost:8080/callback"))
+  def run(self):  
+    url = self.generate_authorize_url()
+    print "Please browse to %s if you are not directed there automatically." % url  
+    webbrowser.open(url)
+    print "Please enter the PIN provided by Twitter."
+    pin = input()
 
-  generate.exposed = True
+    token = self.verify_authorization(pin)
 
-  def callback(self, oauth_verifier, oauth_token):    
-    token = self.verify_authorization(oauth_verifier)
+    print "Access Token:"
 
-    yield "Access Token: <br />\n"
-
-    yield "    - oauth_consumer_token        = %s  <br />\n" % self.oauth_consumer_token
-    yield "    - oauth_consumer_secret = %s <br />\n" % self.oauth_consumer_secret
-
-
-    yield "    - oauth_token        = %s <br />\n" % token['access_token_key']
-    yield "    - oauth_token_secret = %s <br />\n" % token['access_token_secret']
-    yield "The tokens above have been saved to access_tokens.yaml <br />" 
-    yield "Use C-c on the terminal to end this process." 
+    print "    - oauth_consumer_token        = %s" % self.oauth_consumer_token
+    print "    - oauth_consumer_secret = %s" % self.oauth_consumer_secret
+    print "    - oauth_token        = %s" % token['access_token_key']
+    print "    - oauth_token_secret = %s" % token['access_token_secret']
+    print "The tokens above have been saved to access_tokens.yaml" 
 
     self.token_store.add_auth(**token)
     self.token_store.save()
-
-  callback.exposed = True
 
 
 if __name__ == "__main__": 
   try:
     with open(CONFIG_FILE) as f:
       config = yaml.load(f)
-    cherrypy.tree.mount(AuthenticateTwitterCherryPy(config["oauth"]))
-    cherrypy.server.socket_port = 8080
-    cherrypy.engine.start()
-    webbrowser.open("http://localhost:8080/generate")
-    cherrypy.engine.block()
-
+    process = AuthenticateTwitterOOB(config["oauth"])
+    process.run()
   except IOError:
     print "Creating configuration files:"
 

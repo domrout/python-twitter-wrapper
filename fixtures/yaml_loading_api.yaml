@@ -1,0 +1,61 @@
+shallow_method:
+    url: tests/shallow_method
+
+nested_methods:
+    contains:
+        nested_1:
+            url: tests/nested_1
+        nested_2:
+            url: tests/nested_2
+        nested_3:
+            url: tests/nested_3
+
+very_nested_methods:
+    contains:
+        nested_1:
+            url: tests/nested_1
+            contains:
+                very_nested: 
+                    url: tests/very_nested
+                very_nested_but_not_called:
+                    url: tests/very_nested_useless
+        nested_2:
+            url: tests/nested_2
+            contains:
+                very_nested: 
+                    url: tests/very_nested_2
+                very_nested_but_not_called:
+                    url: tests/very_nested_useless
+
+inherited_model:
+    model: Status
+    doc: "HELLOBEAR"
+    url: parent
+    contains:
+        descendent: 
+            url: descendent
+
+not_inherited_model:
+    model: Status
+    url: parent
+    contains:
+        descendent: 
+            url: descendent
+            model: User
+        emancipated_descendent:
+            url: other_descendent
+            model: None
+
+not_inheriting_others:
+    url: parent
+    default_param: def_param 
+    post: true
+    contains:
+        descendent:
+            url: descendent
+
+not_inheriting_url:
+    url: parent
+    contains:
+        descendent:
+            post: true
