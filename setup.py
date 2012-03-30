@@ -11,5 +11,5 @@ setup(name='TwitterWrapper',
       packages=['twitterwrapper'],
       scripts=['scripts/authenticate_twitter_cherrypy', 'scripts/authenticate_twitter'],
       package_data={'twitterwrapper': ['*.yaml', 'defaults/*.yaml']},
-      install_requires=["oauth2", "cherrypy", "pyyaml", "anyjson"]
+      install_requires=["oauth2", "pyyaml", "anyjson"]
      )

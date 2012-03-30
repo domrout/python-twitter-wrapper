@@ -5,6 +5,6 @@ To install, run:
 Dependencies include:	
 
 	pyyaml
-	cherrypy
+	cherrypy (optional)
 	oauth2
 	anyjson
