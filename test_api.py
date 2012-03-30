@@ -3,24 +3,8 @@ from functools import partial
 
 class DummyConnection:
     """Replaces some of the methods of the connection object for testing purposes"""
-    def __init__(self, connection):
-        self.connection = connection
+    def __init__(self):
         self.result = dict()
-        self.register()
-
-    def register(self):
-        self.true_fetch = self.connection.FetchUrl
-        self.true_prefix = self.connection.PrefixURL
-        self.true_build = self.connection._BuildUrl
-
-        self.connection.FetchUrl = self.FetchUrl
-        self.connection.PrefixURL = self.PrefixUrl
-        self.connection._BuildUrl = self._BuildUrl
-
-    def unregister(self):
-        self.connection.FetchUrl = self.true_fetch
-        self.connection.PrefixURL = self.PrefixUrl
-        self.connection._BuildUrl = self._BuildUrl
 
     def FetchUrl(self, url, **other_params):
         self.lastUrl = url
@@ -28,7 +12,7 @@ class DummyConnection:
 
         return self.get_result()
 
-    def PrefixUrl(self, url):
+    def PrefixURL(self, url):
         return url
 
     def _BuildUrl(self, url):
@@ -51,9 +35,10 @@ class ApiMethodTests(unittest.TestCase):
         with open(self.API_FILE) as f:
             specification = yaml.load(f)
 
-        self.api = twitterwrapper.Api(specification=specification)
+        self.dummy = DummyConnection()
 
-        self.dummy = DummyConnection(self.api._connection)
+        self.api = twitterwrapper.Api(specification=specification, connection=self.dummy)
+
         self._load_fixture(self.FIXTURE_FILE)
 
     def _load_fixture(self, fixture):

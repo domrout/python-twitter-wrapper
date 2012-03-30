@@ -32,6 +32,7 @@
   }
 """
 import oauth2, urlparse, urllib, yaml
+from _connection import Connection
 
 DEFAULT_ACCESS_TOKENS_FILE = "access_tokens.yaml"
 
@@ -78,9 +79,9 @@ class AccessTokenStore(object):
         return self.tokens[screen_name]
       else:
         raise Exception("Screen name not found in access token file")
-    elif len(access_tokens) > 0:
-      screen_name = access_tokens.keys()[0]
-      return access_tokens[screen_name]
+    elif len(self.tokens) > 0:
+      screen_name = self.tokens.keys()[0]
+      return self.tokens[screen_name]
     else:
       raise Exception("No access tokens available")
 
@@ -108,6 +109,18 @@ class AccessTokenStore(object):
           "consumer_key": consumer_key,
           "consumer_secret": consumer_secret
         }
+
+def config_connection(username = None, filename=DEFAULT_ACCESS_TOKENS_FILE):
+  """
+    Convenience method to load the access tokens and create a connection.
+
+    If used repeatedly this will load the file many times. If that's not what
+    you want, use AccessTokenStore directly.
+  """
+  store = AccessTokenStore(filename)
+  store.load()
+
+  return store.get_connection(username)
 
 class AuthenticationProcess(object):
   """

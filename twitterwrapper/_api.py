@@ -27,6 +27,7 @@
 
 from functools import partial
 from _connection import Connection
+from access_tokens import config_connection
 import anyjson, yaml, string, models, os, sys
 from copy import copy
 from _utils import *
@@ -235,33 +236,3 @@ class Api(object):
         setattr(target, method, api_object)
 
     return target
-
-
-access_tokens = None
-KEY_FILE_LOCATION = "access_tokens.yaml"
-
-def config_connection(screen_name = ""):
-  """Loads an access key from access_tokens.yaml and creates a connection using it.
-
-    If no screen name is supplied, will use the first access key.
-
-    This is not necessarily the best way to do this.
-  """
-  global access_tokens, KEY_FILE_LOCATION
-  if access_tokens is None:
-    try:
-      with open(KEY_FILE_LOCATION) as f:
-        access_tokens = yaml.load(f)
-    except IOError:
-      raise IOError("Access token file not found. Try running authenticate_twitter_cherrypy")
-
-  if screen_name:
-    if screen_name in access_tokens:
-      return access_tokens[screen_name].get("connection", Connection(**access_tokens[screen_name]))
-    else:
-      raise Exception("Screen name not found in access token file")
-  elif len(access_tokens) > 0:
-    screen_name = access_tokens.keys()[0]
-    return access_tokens[screen_name].get("connection", Connection(**access_tokens[screen_name]))
-  else:
-    raise Exception("No access tokens available")

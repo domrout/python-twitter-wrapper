@@ -39,18 +39,22 @@ saved in access_tokens.yaml (in your application path):
       consumer_key: INSERT_KEY_HERE
       consumer_secret: INSERT_SECRET_HERE
 
-The tokens can then be loaded using config_connection, like so:
+The tokens can then be loaded from that filestore like so:
 
-    connection = config_connection("some_user_name")
+    connection = twitterwrapper.config_connection("some_user_name")
+    api = twitterwrapper.Api(connection)
 
-If you supply no username, the first api key from the file will be loaded.
+Omitting the username parameter will cause the first key from the file to be loaded.
 
 For convenience, it is also possible to create an api instance with a single line:
 
     api = twitterwrapper.Api()
 
-Which will also use the first key from access_tokens.yaml
- 
+Which is equivalent to:
+
+    connection =  twitterwrapper.config_connection()
+    api = twitterwrapper.Api(connection)
+   
 Getting access tokens
 ----------------------
 
