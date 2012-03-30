@@ -1,0 +1,35 @@
+test_status:
+  url: status 
+  model: Status
+
+Status:
+  shallow_call:
+    url: shallow_call
+
+  deep_call_parent:
+    url: deep_call_parent
+    contains:
+      deep_call_child:
+        url: deep_call_child
+      deep_post_with_container_id:
+        url: deep_post_with_container_id
+        container_id: status_id
+        post: true
+      deep_get_with_container_id:
+        url: deep_get_with_container_id
+        container_id: status_id
+
+  post_with_container_id:
+    url: post_with_container_id
+    post: true
+    container_id: status_id
+
+  get_with_container_id:
+    url: get_with_container_id
+    container_id: status_id
+
+  should_insert_id:
+    url: should_insert_id/%(id)s
+
+  should_insert_text:
+    url: should_insert_text/%(text)s

@@ -1,0 +1,36 @@
+with_default_param:
+  default_param: def_param 
+  url: with_default_param
+
+with_default_param_id:
+  default_param: id
+  url: with_default_param_id
+
+basic:
+  url: basic
+
+post_basic:
+  url: post_basic
+  post: true
+
+url_with_matches:
+  url: match/%(a)s/this/%(b)s
+
+not_callable_parent:
+  contains:
+    child:
+      url: child
+
+callable_parent:
+  url: callable_parent
+  contains:
+    child:
+      url: child
+
+test_status:
+  model: Status
+  url: test_status
+
+with_default_param_in_url:
+  default_param: def_param 
+  url: with_default_param/%(def_param)s

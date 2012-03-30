@@ -1,0 +1,25 @@
+status:
+  text: test tweet
+  id: 1234
+  user:
+    screen_name: bob_dylan
+
+user: 
+    screen_name: bob_dylan
+
+many_statuses:
+  - status:
+      text: test tweet a
+      id: 1
+      user:
+        screen_name: bob_dylan
+  - status:
+      text: test tweet b
+      id: 2
+      user:
+        screen_name: bryan_adams
+  - status:
+      text: test tweet c
+      id: 3
+      user:
+        screen_name: david_cameron

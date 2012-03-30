@@ -1,17 +1,20 @@
 A lighter twitter wrapper
 ======================
 
-A less "heavy" implementation of the Twitter API within Python. The network code is 
-taken from python-twitter, though this project is significantly smaller.
+A "pythonic" implication of the Twitter API designed to more closely match the semantics
+of the actual api documentation (https://dev.twitter.com/docs/api). Available calls are 
+specified using YAML and loaded using reflection. 
 
-The calls allowed by the API are stated in a YAML file, which can be easily updated.
+This implementation is thousands of lines smaller than python-twitter and tweepy. It offers 
+less "safety" and custom objects, but is easier to maintain - it should be trivial for users
+to add their own API calls if the specification provided goes out of date.
 
-This API also supports a slightly more natural syntax than many others. 
-
-OAuth authentication is supported by default. 
+Network code is taken from the python-twitter project, and OAuth authentication is supported 
+(and required). Scripts are provided to assist with creating API tokens. 
 
 This version does not yet contain utilities to make it easy to save your Twitter objects, 
-and many POST methods are currently missing. It is currently not automatically tested.
+and many POST methods are currently missing. Unit tests have been provided for the ability
+to correctly load API specifications. 
 
 Getting started
 ----------------------
