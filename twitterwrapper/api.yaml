@@ -13,16 +13,28 @@
 # limitations under the License 
 
 account:
+  doc: |
+    Account-level configuration settings for users
   contains:
     rate_limit_status:
+      doc: |
+        Returns the remaining number of API requests available to the requesting
+        user before the API limit is reached for the current hour. Calls to
+        rate_limit_status do not count against the rate limit.
       url: account/rate_limit_status
       model: LimitStatus
     verify_credentials:
       model: User
       url: account/verify_credentials
+      doc: |
+        Returns an HTTP 200 OK response code and a representation of the requesting
+        user if authentication was successful; returns a 401 status code and an error
+        message if not.
     totals:
       url: account/totals
-      doc: See total tweets etc
+      doc: |
+        Returns the current count of friends, followers, 
+        updates (statuses) and favorites of the authenticating user.
 
 statuses:
   model: Status
@@ -78,18 +90,81 @@ search:
 direct_messages:
   model: DirectMessage
   url: direct_messages
+  doc: |
+    Direct Messages are short, non-public messages sent between two users.
+    Returns the 20 most recent direct messages sent to the authenticating user.
   contains:
     sent:
+      doc: |
+        Returns the 20 most recent direct messages sent by the authenticating user
       url: direct_messages/sent
     show:
+      doc: |
+        Returns a single direct message, specified by an id parameter
       url: direct_messages/show
       default_param: id
+    destroy:
+      doc: |
+        Destroys the direct message specified in the required ID parameter. 
+        The authenticating user must be the recipient of the specified direct message.
+      url: direct_messages/destroy/%(id)
+      default_param: id
+      post: true
+    new:
+      doc: |
+        Sends a new direct message to the specified user from the authenticating user. 
+        Requires both the user and text parameters. 
+        Returns the sent message if successful.
+      url: direct_messages/new
+      example_params: "screen_name, text" 
+      post: true
+
 
 followers_ids:
   url: followers/ids
 
 friends_ids:
   url: friends/ids
+
+friendships:
+  contains:
+    exists:
+      url: friendships/exists
+      doc: |
+        Test for the existence of friendship between two users. 
+        Will return true if user_a follows user_b, otherwise will return false.
+        The authenticating user must be a follower of the protected user.
+        
+        Users are identified using user_id_a and user_id_b or screen_name_a
+        and screen_name_b
+      example_params: "user_id_a, user_id_b"
+    incoming:
+      url: friendships/incoming
+      doc: |
+        Returns an array of numeric IDs for every user who has a pending request
+        to follow the authenticating user.
+    outgoing:
+      url: friendships/outgoing
+      doc: |
+        Returns an array of numeric IDs for every protected user for whom the 
+        authenticating user has a pending follow request.
+    show:    
+      url: friendships/show
+      doc: |
+        Returns detailed information about the relationship between two users.
+
+    lookup:
+      url: friendships/lookup
+      doc: |
+        Returns the relationship of the authenticating user to the comma separated 
+        list of up to 100 screen_names or user_ids provided. Values for connections 
+        can be: following, following_requested, followed_by, none.
+
+    no_retweet_ids:
+      url: friendships/no_retweet_ids
+      doc: |
+        Returns an array of user_ids that the currently authenticated user does not want
+        to see retweets from.
 
 users:
   model: User
@@ -113,9 +188,29 @@ users:
       url: users/suggestions
       model: SuggestionCategory
 
-favourites:
+favorites:
   model: Status
-  url: favourites
+  url: favorites
+  doc: | 
+    Returns the 20 most recent favorite statuses for the authenticating user or 
+    user specified by the ID parameter.
+  contains:
+    create:
+      post: true
+      url: favorites/create/%(id)s
+      default_param: id
+      doc: |
+        Favorites the status specified in the ID parameter as the authenticating user.
+        Returns the favorite status when successful. 
+        This process invoked by this method is asynchronous.
+    destroy:
+      post: true
+      url: favorites/destroy/%(id)s
+      default_param: id
+      doc: |
+        Un-favorites the status specified in the ID parameter as the authenticating user.
+        Returns the un-favorited status in the requested format when successful.
+        This process invoked by this method is asynchronous.
 
 lists:
   model: List
@@ -123,18 +218,42 @@ lists:
   contains: 
     all: 
       url: lists/all
+      doc: |
+        Returns all lists the authenticating or specified user subscribes to, including their own.
+        The user is specified using the user_id or screen_name parameters. 
+        If no user is given, the authenticating user is used.
     statuses: 
       url: lists/statuses
       default_param: list_id
+      doc: | 
+        Returns tweet timeline for members of the specified list.
+        Historically, retweets were not available in list timeline responses but you can now use
+        the include_rts=true parameter to additionally receive retweet objects.
+    destroy: 
+      url: lists/destroy
+      post: true
+      default_param: list_id
+      doc: |
+        Deletes the specified list. The authenticated user must own the list to be able to 
+        destroy it.
     memberships:
       url: lists/memberships
       default_param: screen_name
+      doc: | 
+        Returns the lists the specified user has been added to. If user_id or screen_name are not
+        provided the memberships for the authenticating user are returned.
     subscribers:
       url: lists/subscribers
       model: User
       contains:
         show:
           url: lists/subscribers/show 
+          doc: |
+            Check if the specified user is a subscriber of the specified list. 
+            Returns the user if they are subscriber.
+      doc: |
+        Returns the subscribers of the specified list. Private list subscribers will only be 
+        shown if the authenticated user owns the specified list.
     members:
       url: lists/members
       model: User
@@ -178,6 +297,24 @@ Status:
     post: true
     url: statuses/retweet/%(id)s
     container_id: id
+  favorite:
+    post: true
+    url: favorites/create/%(id)s
+    container_id: id
+    model: Status
+    doc: |
+      Favorites the status specified as the authenticating user.
+      Returns the favorite status when successful. 
+      This process invoked by this method is asynchronous.
+  unfavourite:
+    post: true
+    url: favorites/destroy/%(id)s
+    model: Status
+    container_id: id
+    doc: |
+      Unfavorites the status specified as the authenticating user.
+      This process invoked by this method is asynchronous.
+
 
 List:
   statuses:
@@ -215,18 +352,6 @@ User:
       subscriptions:
         url: lists/subscriptions
 
-
-# GET friendships/exists  Test for the existence of friendship between two users. Will return true if user_a follows user_b, otherwise will return false. Authentication is required if either user A or user B are protected. Additionally the authenticating user must be a follower of the protected user. Consider using...
-
-# GET friendships/incoming  Returns an array of numeric IDs for every user who has a pending request to follow the authenticating user.
-
-# GET friendships/outgoing  Returns an array of numeric IDs for every protected user for whom the authenticating user has a pending follow request.
-
-# GET friendships/show  Returns detailed information about the relationship between two users.
-
-# GET friendships/lookup  Returns the relationship of the authenticating user to the comma separated list of up to 100 screen_names or user_ids provided. Values for connections can be: following, following_requested, followed_by, none.
-
-# GET friendships/no_retweet_ids  Returns an array of user_ids that the currently authenticated user does not want to see retweets from.Users
 
 
 # GET trends/:woeid Returns the top 10 trending topics for a specific WOEID, if trending information is available for it. The response is an array of "trend" objects that encode the name of the trending topic, the query parameter that can be used to search for the topic on Twitter Search, and the Twitter Search URL....

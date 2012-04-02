@@ -1,0 +1,482 @@
+<h1>API calls</h1>
+
+<p>API calls are as detailed at 
+        <a href="https://dev.twitter.com/docs/api">https://dev.twitter.com/docs/api</a></p>
+
+<h2>account</h2>
+
+<p>Account-level configuration settings for users</p>
+
+<h3>account.rate_limit_status</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/account/rate_limit_status">GET account/rate_limit_status</a></p>
+
+<p>Returns the remaining number of API requests available to the requesting
+user before the API limit is reached for the current hour. Calls to
+rate_limit_status do not count against the rate limit.</p>
+
+<p>Example use: api.account.rate_limit_status()</p>
+
+<p>Returns <strong>LimitStatus</strong> object</p>
+
+<h3>account.verify_credentials</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/account/verify_credentials">GET account/verify_credentials</a></p>
+
+<p>Returns an HTTP 200 OK response code and a representation of the requesting
+user if authentication was successful; returns a 401 status code and an error
+message if not.</p>
+
+<p>Example use: api.account.verify_credentials()</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h3>account.totals</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/account/totals">GET account/totals</a></p>
+
+<p>Returns the current count of friends, followers, 
+updates (statuses) and favorites of the authenticating user.</p>
+
+<p>Example use: api.account.totals()</p>
+
+<h2>direct_messages</h2>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/direct_messages">GET direct_messages</a></p>
+
+<p>Direct Messages are short, non-public messages sent between two users.
+Returns the 20 most recent direct messages sent to the authenticating user.</p>
+
+<p>Example use: api.direct_messages()</p>
+
+<p>Returns <strong>DirectMessage</strong> object</p>
+
+<h3>direct_messages.destroy</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/post/direct_messages/destroy/%(id">POST direct_messages/destroy/%(id)</a>)</p>
+
+<p>Destroys the direct message specified in the required ID parameter. 
+The authenticating user must be the recipient of the specified direct message.</p>
+
+<p>Example use: api.direct_messages.destroy(id)</p>
+
+<p>Returns <strong>DirectMessage</strong> object</p>
+
+<h3>direct_messages.show</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/direct_messages/show">GET direct_messages/show</a></p>
+
+<p>Returns a single direct message, specified by an id parameter</p>
+
+<p>Example use: api.direct_messages.show(id)</p>
+
+<p>Returns <strong>DirectMessage</strong> object</p>
+
+<h3>direct_messages.sent</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/direct_messages/sent">GET direct_messages/sent</a></p>
+
+<p>Returns the 20 most recent direct messages sent by the authenticating user</p>
+
+<p>Example use: api.direct_messages.sent()</p>
+
+<p>Returns <strong>DirectMessage</strong> object</p>
+
+<h3>direct_messages.new</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/post/direct_messages/new">POST direct_messages/new</a></p>
+
+<p>Sends a new direct message to the specified user from the authenticating user. 
+Requires both the user and text parameters. 
+Returns the sent message if successful.</p>
+
+<p>Example use: api.direct_messages.new(screen_name, text)</p>
+
+<p>Returns <strong>DirectMessage</strong> object</p>
+
+<h2>favorites</h2>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/favorites">GET favorites</a></p>
+
+<p>Returns the 20 most recent favorite statuses for the authenticating user or 
+user specified by the ID parameter.</p>
+
+<p>Example use: api.favorites()</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>favorites.destroy</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/post/favorites/destroy/:id">POST favorites/destroy/:id</a></p>
+
+<p>Un-favorites the status specified in the ID parameter as the authenticating user.
+Returns the un-favorited status in the requested format when successful.
+This process invoked by this method is asynchronous.</p>
+
+<p>Example use: api.favorites.destroy(id)</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>favorites.create</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/post/favorites/create/:id">POST favorites/create/:id</a></p>
+
+<p>Favorites the status specified in the ID parameter as the authenticating user.
+Returns the favorite status when successful. 
+This process invoked by this method is asynchronous.</p>
+
+<p>Example use: api.favorites.create(id)</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h2>followers_ids</h2>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/followers/ids">GET followers/ids</a></p>
+
+<p>Example use: api.followers_ids()</p>
+
+<h2>friends_ids</h2>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/friends/ids">GET friends/ids</a></p>
+
+<p>Example use: api.friends_ids()</p>
+
+<h2>friendships</h2>
+
+<h3>friendships.outgoing</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/friendships/outgoing">GET friendships/outgoing</a></p>
+
+<p>Returns an array of numeric IDs for every protected user for whom the 
+authenticating user has a pending follow request.</p>
+
+<p>Example use: api.friendships.outgoing()</p>
+
+<h3>friendships.no_retweet_ids</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/friendships/no_retweet_ids">GET friendships/no_retweet_ids</a></p>
+
+<p>Returns an array of user_ids that the currently authenticated user does not want
+to see retweets from.</p>
+
+<p>Example use: api.friendships.no_retweet_ids()</p>
+
+<h3>friendships.incoming</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/friendships/incoming">GET friendships/incoming</a></p>
+
+<p>Returns an array of numeric IDs for every user who has a pending request
+to follow the authenticating user.</p>
+
+<p>Example use: api.friendships.incoming()</p>
+
+<h3>friendships.exists</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/friendships/exists">GET friendships/exists</a></p>
+
+<p>Test for the existence of friendship between two users. 
+Will return true if user_a follows user_b, otherwise will return false.
+The authenticating user must be a follower of the protected user.</p>
+
+<p>Users are identified using user_id_a and user_id_b or screen_name_a
+and screen_name_b</p>
+
+<p>Example use: api.friendships.exists(user_id_a, user_id_b)</p>
+
+<h3>friendships.show</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/friendships/show">GET friendships/show</a></p>
+
+<p>Returns detailed information about the relationship between two users.</p>
+
+<p>Example use: api.friendships.show()</p>
+
+<h3>friendships.lookup</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/friendships/lookup">GET friendships/lookup</a></p>
+
+<p>Returns the relationship of the authenticating user to the comma separated 
+list of up to 100 screen_names or user_ids provided. Values for connections 
+can be: following, following_requested, followed_by, none.</p>
+
+<p>Example use: api.friendships.lookup()</p>
+
+<h2>lists</h2>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists">GET lists</a></p>
+
+<p>Example use: api.lists()</p>
+
+<p>Returns <strong>List</strong> object</p>
+
+<h3>lists.all</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists/all">GET lists/all</a></p>
+
+<p>Returns all lists the authenticating or specified user subscribes to, including their own.
+The user is specified using the user_id or screen_name parameters. 
+If no user is given, the authenticating user is used.</p>
+
+<p>Example use: api.lists.all()</p>
+
+<p>Returns <strong>List</strong> object</p>
+
+<h3>lists.members</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists/members">GET lists/members</a></p>
+
+<p>Example use: api.lists.members()</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h4>lists.members.show</h4>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists/members/show">GET lists/members/show</a></p>
+
+<p>Example use: api.lists.members.show(user_id)</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h3>lists.subscriptions</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists/subscriptions">GET lists/subscriptions</a></p>
+
+<p>Example use: api.lists.subscriptions(user_id)</p>
+
+<p>Returns <strong>List</strong> object</p>
+
+<h3>lists.show</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists/show">GET lists/show</a></p>
+
+<p>Example use: api.lists.show(list_id)</p>
+
+<p>Returns <strong>List</strong> object</p>
+
+<h3>lists.memberships</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists/memberships">GET lists/memberships</a></p>
+
+<p>Returns the lists the specified user has been added to. If user_id or screen_name are not
+provided the memberships for the authenticating user are returned.</p>
+
+<p>Example use: api.lists.memberships(screen_name)</p>
+
+<p>Returns <strong>List</strong> object</p>
+
+<h3>lists.subscribers</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists/subscribers">GET lists/subscribers</a></p>
+
+<p>Returns the subscribers of the specified list. Private list subscribers will only be 
+shown if the authenticated user owns the specified list.</p>
+
+<p>Example use: api.lists.subscribers()</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h4>lists.subscribers.show</h4>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists/subscribers/show">GET lists/subscribers/show</a></p>
+
+<p>Check if the specified user is a subscriber of the specified list. 
+Returns the user if they are subscriber.</p>
+
+<p>Example use: api.lists.subscribers.show()</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h3>lists.destroy</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/post/lists/destroy">POST lists/destroy</a></p>
+
+<p>Deletes the specified list. The authenticated user must own the list to be able to 
+destroy it.</p>
+
+<p>Example use: api.lists.destroy(list_id)</p>
+
+<p>Returns <strong>List</strong> object</p>
+
+<h3>lists.statuses</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists/statuses">GET lists/statuses</a></p>
+
+<p>Returns tweet timeline for members of the specified list.
+Historically, retweets were not available in list timeline responses but you can now use
+the include_rts=true parameter to additionally receive retweet objects.</p>
+
+<p>Example use: api.lists.statuses(list_id)</p>
+
+<p>Returns <strong>List</strong> object</p>
+
+<h2>search</h2>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/search">GET search</a></p>
+
+<p>Example use: api.search(q)</p>
+
+<p>Returns <strong>SearchResult</strong> object</p>
+
+<h2>statuses</h2>
+
+<h3>statuses.user_timeline</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/statuses/user_timeline">GET statuses/user_timeline</a></p>
+
+<p>Example use: api.statuses.user_timeline()</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>statuses.retweeted_by_user</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/statuses/retweeted_by_user">GET statuses/retweeted_by_user</a></p>
+
+<p>Example use: api.statuses.retweeted_by_user(screen_name)</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>statuses.retweeted_by</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/statuses/:id/retweeted_by">GET statuses/:id/retweeted_by</a></p>
+
+<p>Example use: api.statuses.retweeted_by(id)</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h4>statuses.retweeted_by.ids</h4>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/statuses/:id/retweeted_by/ids">GET statuses/:id/retweeted_by/ids</a></p>
+
+<p>Example use: api.statuses.retweeted_by.ids()</p>
+
+<p>Returns <strong>None</strong> object</p>
+
+<h3>statuses.retweets_of_me</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/statuses/retweets_of_me">GET statuses/retweets_of_me</a></p>
+
+<p>Example use: api.statuses.retweets_of_me()</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>statuses.retweeted_to_me</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/statuses/retweeted_to_me">GET statuses/retweeted_to_me</a></p>
+
+<p>Example use: api.statuses.retweeted_to_me()</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>statuses.show</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/statuses/show">GET statuses/show</a></p>
+
+<p>Example use: api.statuses.show(id)</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>statuses.update</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/post/statuses/update">POST statuses/update</a></p>
+
+<p>Example use: api.statuses.update(status)</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>statuses.home_timeline</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/statuses/home_timeline">GET statuses/home_timeline</a></p>
+
+<p>Example use: api.statuses.home_timeline()</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>statuses.retweets</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/statuses/retweets/:id">GET statuses/retweets/:id</a></p>
+
+<p>Example use: api.statuses.retweets(id)</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>statuses.retweeted_to_user</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/statuses/retweeted_to_user">GET statuses/retweeted_to_user</a></p>
+
+<p>Example use: api.statuses.retweeted_to_user(screen_name)</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>statuses.mentions</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/statuses/mentions">GET statuses/mentions</a></p>
+
+<p>Example use: api.statuses.mentions()</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>statuses.retweeted_by_me</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/statuses/retweeted_by_me">GET statuses/retweeted_by_me</a></p>
+
+<p>Example use: api.statuses.retweeted_by_me()</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>statuses.retweet</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/post/statuses/retweet/:id">POST statuses/retweet/:id</a></p>
+
+<p>Example use: api.statuses.retweet(id)</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h2>users</h2>
+
+<h3>users.search</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/users/search">GET users/search</a></p>
+
+<p>Example use: api.users.search(q)</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h3>users.lookup</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/users/lookup">GET users/lookup</a></p>
+
+<p>Example use: api.users.lookup(screen_name)</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h3>users.contributors</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/users/contributors">GET users/contributors</a></p>
+
+<p>Example use: api.users.contributors(screen_name)</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h3>users.show</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/users/show">GET users/show</a></p>
+
+<p>Example use: api.users.show(screen_name)</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h3>users.suggestions</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/users/suggestions">GET users/suggestions</a></p>
+
+<p>Example use: api.users.suggestions()</p>
+
+<p>Returns <strong>SuggestionCategory</strong> object</p>
+
+<h3>users.contributees</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/users/contributees">GET users/contributees</a></p>
+
+<p>Example use: api.users.contributees(screen_name)</p>
+
+<p>Returns <strong>User</strong> object</p>

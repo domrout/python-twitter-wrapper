@@ -20,9 +20,6 @@
   Methods are described in api.yaml
   The call structure should roughly match https://dev.twitter.com/docs/api
 
-  An api object will be generated automatically when the module in loaded. This should use
-    the 
-
 """
 
 from functools import partial
@@ -40,6 +37,7 @@ class _ApiMethodSpec(object):
       model = None, 
       contains = dict(), 
       default_param = None,
+      example_params = None,
       container_id = None,
       default = None, 
       post = False
