@@ -1,0 +1,152 @@
+<h1>Model objects</h1>
+
+<p>This calls, detailed at
+        <a href="https://dev.twitter.com/docs/api">https://dev.twitter.com/docs/api</a>
+        will be available for use inside objects returned by the API.</p>
+
+<h2>List</h2>
+
+<h3>members</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists/members">GET lists/members</a></p>
+
+<p>Example use: list.members()</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h4>members.show</h4>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists/members/show">GET lists/members/show</a></p>
+
+<p>Example use: list.members.show()</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h3>statuses</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists/statuses">GET lists/statuses</a></p>
+
+<p>Example use: list.statuses()</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>subscribers</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists/subscribers">GET lists/subscribers</a></p>
+
+<p>Example use: list.subscribers()</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h4>subscribers.show</h4>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists/subscribers/show">GET lists/subscribers/show</a></p>
+
+<p>Example use: list.subscribers.show()</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h2>Status</h2>
+
+<h3>destroy</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/post/statuses/destroy">POST statuses/destroy</a></p>
+
+<p>Destroys the status specified by the required ID parameter. The authenticating user must be the author of the specified status. Returns the destroyed status if successful.</p>
+
+<p>Example use: status.destroy()</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>favorite</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/post/favorites/create/:id">POST favorites/create/:id</a></p>
+
+<p>Favorites the status specified as the authenticating user.
+Returns the favorite status when successful. 
+This process invoked by this method is asynchronous.</p>
+
+<p>Example use: status.favorite()</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>reply</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/post/statuses/update">POST statuses/update</a></p>
+
+<p>Post a reply to the public status - reply element will be ignored unless you @mention the original poster.</p>
+
+<p>Example use: status.reply(status)</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>retweet</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/post/statuses/retweet/:id">POST statuses/retweet/:id</a></p>
+
+<p>Example use: status.retweet()</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>retweeted_by</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/statuses/:id/retweeted_by">GET statuses/:id/retweeted_by</a></p>
+
+<p>Example use: status.retweeted_by()</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h4>retweeted_by.ids</h4>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/statuses/:id/retweeted_by/ids">GET statuses/:id/retweeted_by/ids</a></p>
+
+<p>Example use: status.retweeted_by.ids()</p>
+
+<h3>retweets</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/statuses/retweets/:id">GET statuses/retweets/:id</a></p>
+
+<p>Example use: status.retweets()</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h3>unfavourite</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/post/favorites/destroy/:id">POST favorites/destroy/:id</a></p>
+
+<p>Unfavorites the status specified as the authenticating user.
+This process invoked by this method is asynchronous.</p>
+
+<p>Example use: status.unfavourite()</p>
+
+<p>Returns <strong>Status</strong> object</p>
+
+<h2>SuggestionCategory</h2>
+
+<h3>members</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/users/suggestions/:slug/members">GET users/suggestions/:slug/members</a></p>
+
+<p>Example use: suggestioncategory.members()</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h3>users</h3>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/users/suggestions/:slug">GET users/suggestions/:slug</a></p>
+
+<p>Example use: suggestioncategory.users()</p>
+
+<p>Returns <strong>User</strong> object</p>
+
+<h2>User</h2>
+
+<h3>lists</h3>
+
+<h4>lists.subscriptions</h4>
+
+<p><a href="https://dev.twitter.com/docs/api/1/get/lists/subscriptions">GET lists/subscriptions</a></p>
+
+<p>Example use: user.lists.subscriptions()</p>
+
+<p>Returns <strong>List</strong> object</p>

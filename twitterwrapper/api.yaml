@@ -107,7 +107,7 @@ direct_messages:
       doc: |
         Destroys the direct message specified in the required ID parameter. 
         The authenticating user must be the recipient of the specified direct message.
-      url: direct_messages/destroy/%(id)
+      url: direct_messages/destroy/%(id)s
       default_param: id
       post: true
     new:

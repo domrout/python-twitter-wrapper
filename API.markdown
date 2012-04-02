@@ -48,7 +48,7 @@ Example use: api.direct\_messages()
 
 Returns **DirectMessage** object
 ###direct\_messages.destroy
-[POST direct\_messages/destroy/%(id)](https://dev.twitter.com/docs/api/1/post/direct_messages/destroy/%(id))
+[POST direct\_messages/destroy/:id](https://dev.twitter.com/docs/api/1/post/direct_messages/destroy/:id)
 
 Destroys the direct message specified in the required ID parameter. 
 The authenticating user must be the recipient of the specified direct message.
@@ -309,7 +309,6 @@ Returns **User** object
 
 Example use: api.statuses.retweeted\_by.ids()
 
-Returns **None** object
 ###statuses.retweets\_of\_me
 [GET statuses/retweets\_of\_me](https://dev.twitter.com/docs/api/1/get/statuses/retweets_of_me)
 
