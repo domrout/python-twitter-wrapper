@@ -51,6 +51,7 @@ statuses:
       url: statuses/retweets_of_me
     user_timeline:
       url: statuses/user_timeline  
+      default_param: screen_name
     retweeted_to_user:
       url: statuses/retweeted_to_user
       default_param: screen_name

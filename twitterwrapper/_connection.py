@@ -98,7 +98,7 @@ class Connection:
       self._default_params = {}
 
       if base_url is None:
-        self.base_url = 'https://api.twitter.com/1'
+        self.base_url = 'https://api.twitter.com/1.1'
       else:
         self.base_url = base_url
 
