@@ -85,7 +85,7 @@ statuses:
 
 search:
   model: SearchResult
-  url: search
+  url: search/tweets
   default_param: q
 
 direct_messages:
