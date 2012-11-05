@@ -16,7 +16,7 @@
 
 """Provides empty classes for the twitter data models"""
 
-import urlparse, cherrypy, webbrowser, urllib, anyjson, sys
+import urlparse, urllib, anyjson, sys
 from functools import partial
 import oauth2 as oauth
 
