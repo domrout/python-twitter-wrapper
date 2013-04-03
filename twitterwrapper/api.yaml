@@ -42,7 +42,7 @@ statuses:
     home_timeline:
       url: statuses/home_timeline
     mentions:
-      url: statuses/mentions
+      url: statuses/mentions_timeline
     retweeted_by_me:
       url: statuses/retweeted_by_me
     retweeted_to_me:

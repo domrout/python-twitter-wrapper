@@ -75,10 +75,16 @@ class User(_ApiModel):
 
 class SearchResult(_ApiModel):  
   def custom_attrs(self):
-    return {"results": partial(map, partial(Status, api=self.api))}
+     return {"statuses": partial(map, partial(Status, api=self.api))}
+     
+  @property
+  def results(self):
+    # For version 1.1 compatibilitiy
+    return self.statuses
 
   def __repr__(self):
-    return "<Search '%s' %d results>" % (self.query, len(self.results))
+    return "<Search with %d results>" % len(self.statuses)
+
 class Status(_ApiModel):  
   def custom_attrs(self):
     return {"user": User,
