@@ -128,9 +128,9 @@ class AuthenticationProcess(object):
 
     Should be subclassed to provide actual practical methods for authentication
   """
-  REQUEST_TOKEN_URL = 'http://twitter.com/oauth/request_token'
-  ACCESS_TOKEN_URL = 'http://twitter.com/oauth/access_token'
-  AUTHORIZE_URL = 'http://twitter.com/oauth/authorize'
+  REQUEST_TOKEN_URL = 'http://api.twitter.com/oauth/request_token'
+  ACCESS_TOKEN_URL = 'http://api.twitter.com/oauth/access_token'
+  AUTHORIZE_URL = 'http://api.twitter.com/oauth/authorize'
 
   def __init__(self, config):
     self.configure_auth(config)
