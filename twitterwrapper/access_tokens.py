@@ -122,6 +122,18 @@ def config_connection(username = None, filename=DEFAULT_ACCESS_TOKENS_FILE):
 
   return store.get_connection(username)
 
+def get_auth(username = None, filename=DEFAULT_ACCESS_TOKENS_FILE):
+  """
+    Convenience method to load the access tokens.
+
+    If used repeatedly this will load the file many times. If that's not what
+    you want, use AccessTokenStore directly.
+  """
+  store = AccessTokenStore(filename)
+  store.load()
+
+  return store.get_auth(username)
+
 class AuthenticationProcess(object):
   """
     Provides some of the fundamentals of the authentication process.
@@ -158,7 +170,6 @@ class AuthenticationProcess(object):
     """Uses the given config to connect to the API and get a token with which
       to authorise the app; redirect the user to the URL returned."""
     client = oauth2.Client(self.consumer)
-
     if callback:
       params = {
         'oauth_callback':callback
@@ -172,7 +183,11 @@ class AuthenticationProcess(object):
     if "oauth_token" in self.request_token:
       return "%s?oauth_token=%s" % (self.authorize_url, self.request_token['oauth_token'])
     else:
-      raise Exception("Could not generate request token for authentication. Are the keys correct?")
+      print content
+      if "Desktop applications only support the oauth_callback" in content:
+        raise Exception("Twitter thinks this is a desktop app. Set a fake callback URL for the app at dev.twitter.com")
+      else:
+        raise Exception("Could not generate request token for authentication. Are the keys correct?")
 
   def verify_authorization(self, oauth_verifier):
     """Verifies the authentication given by a user after they've been
