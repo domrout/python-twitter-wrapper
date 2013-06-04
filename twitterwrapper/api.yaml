@@ -16,13 +16,6 @@ account:
   doc: |
     Account-level configuration settings for users
   contains:
-    rate_limit_status:
-      doc: |
-        Returns the remaining number of API requests available to the requesting
-        user before the API limit is reached for the current hour. Calls to
-        rate_limit_status do not count against the rate limit.
-      url: account/rate_limit_status
-      model: LimitStatus
     verify_credentials:
       model: User
       url: account/verify_credentials
@@ -35,6 +28,16 @@ account:
       doc: |
         Returns the current count of friends, followers, 
         updates (statuses) and favorites of the authenticating user.
+
+application:
+  contains:
+    rate_limit_status:
+      doc: |
+        Returns the remaining number of API requests available to the requesting
+        user before the API limit is reached for the current hour. Calls to
+        rate_limit_status do not count against the rate limit.
+      url: application/rate_limit_status
+      model: LimitStatus
 
 statuses:
   model: Status

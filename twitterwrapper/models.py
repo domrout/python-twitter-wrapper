@@ -62,10 +62,18 @@ class _ApiModel(object):
     for k in self.creation_attrs:
       v = getattr(self, k)
 
-      if hasattr(v, "to_dict"):
-        v = v.to_dict()
+      def transform(v):
+        if hasattr(v, "to_dict"):
+          v = v.to_dict()
 
-      result[k] = v
+        if hasattr(v, "iteritems"):
+          v = dict((a, transform(b)) for (a, b) in v.iteritems())
+        elif hasattr(v, "__iter__"):
+          v = [transform(w) for w in v]
+
+        return v
+
+      result[k] = transform(v)
 
     return result
 
