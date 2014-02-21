@@ -193,12 +193,13 @@ users:
       model: SuggestionCategory
 
 favorites:
-  model: Status
-  url: favorites
-  doc: | 
-    Returns the 20 most recent favorite statuses for the authenticating user or 
-    user specified by the ID parameter.
   contains:
+    list: 
+      model: Status
+      url: favorites/list
+      doc: | 
+        Returns the 20 most recent favorite statuses for the authenticating user or 
+        user specified by the ID parameter.
     create:
       post: true
       url: favorites/create/%(id)s
@@ -310,7 +311,7 @@ Status:
       Favorites the status specified as the authenticating user.
       Returns the favorite status when successful. 
       This process invoked by this method is asynchronous.
-  unfavourite:
+  unfavorite:
     post: true
     url: favorites/destroy/%(id)s
     model: Status
