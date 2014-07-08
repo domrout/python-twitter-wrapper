@@ -146,6 +146,7 @@ class AuthenticationProcess(object):
 
   def __init__(self, config):
     self.configure_auth(config)
+    self.request_tokens = {}
     self.initialize_token_store()
 
   def configure_auth(self, config):
@@ -178,10 +179,12 @@ class AuthenticationProcess(object):
       params = dict()
 
     resp, content = client.request(self.request_token_url, "POST", body=urllib.urlencode(params))
-    self.request_token = dict(urlparse.parse_qsl(content))
+    request_token = dict(urlparse.parse_qsl(content))
 
-    if "oauth_token" in self.request_token:
-      return "%s?oauth_token=%s" % (self.authorize_url, self.request_token['oauth_token'])
+    if "oauth_token" in request_token:
+      oauth_token = request_token['oauth_token']
+      self.request_tokens[oauth_token] = request_token
+      return "%s?oauth_token=%s" % (self.authorize_url, oauth_token)
     else:
       print content
       if "Desktop applications only support the oauth_callback" in content:
@@ -189,14 +192,28 @@ class AuthenticationProcess(object):
       else:
         raise Exception("Could not generate request token for authentication. Are the keys correct?")
 
-  def verify_authorization(self, oauth_verifier):
+  def verify_authorization(self, oauth_verifier, oauth_token = None):
     """Verifies the authentication given by a user after they've been
       to twitter.
 
       Adds the new token to the store and saves.
 
       Returns a complete set of auth data."""
-    token = oauth2.Token(self.request_token['oauth_token'], self.request_token['oauth_token_secret'])
+
+    # Hack to maintain backwards compatibility when only one token is used.
+    if oauth_token == None:
+      try:
+        oauth_token = self.request_tokens.keys()[0]
+      except IndexError:
+        raise Exception("No access token exists currently")
+
+    try:
+      # Get the actual token for this request
+      request_token = self.request_tokens[oauth_token]
+    except KeyError:
+      raise Exception("Supplied access token has not been seen before")
+
+    token = oauth2.Token(request_token['oauth_token'], request_token['oauth_token_secret'])
     
     token.set_verifier(oauth_verifier)
     client = oauth2.Client(self.consumer, token)
