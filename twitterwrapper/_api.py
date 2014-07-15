@@ -23,6 +23,7 @@
 """
 
 from functools import partial
+from contextlib import closing
 from _connection import Connection
 from access_tokens import config_connection
 import anyjson, yaml, string, models, os, sys
@@ -125,7 +126,8 @@ class ApiMethod(object):
       p.update(self._container.__dict__)
 
     url = url % p
-
+	
+    
     return self._connection.PrefixURL(url)
   
   def url(self):
@@ -205,7 +207,7 @@ class Api(object):
     connection = connection if connection else config_connection()
 
     if specification == None:
-      with open_data("api.yaml") as f:
+      with closing(open_data("api.yaml")) as f:
         specification = yaml.load(f)
 
     self._connection = connection
