@@ -25,6 +25,7 @@
 from functools import partial
 from contextlib import closing
 from _connection import Connection
+from twitter_exception import TwitterException
 from access_tokens import config_connection
 import anyjson, yaml, string, models, os, sys
 from copy import copy
@@ -88,10 +89,12 @@ class ApiMethod(object):
       api.yaml
       https://dev.twitter.com/docs/api
   """
+
   def __init__(self, 
       connection, 
       api,
       spec, 
+      baseurl = None,
       container = None):
     self._api = api # needed to bless objects
     self._connection = connection
@@ -106,6 +109,11 @@ class ApiMethod(object):
       setattr(self, spec.method, ApiMethod(connection, api, spec, container))
 
   def _process_result(self, result):
+    result = result.json()
+
+    # if errors in result:
+
+
     if isinstance(result, dict) and "previous_cursor" in result:
       return models.ResultsPage(result, self._api)
 
@@ -126,10 +134,9 @@ class ApiMethod(object):
       p.update(self._container.__dict__)
 
     url = url % p
-	
+    # Add the part of the URL for the twitter endpoint.
+    return self._api._prefix_url(url)
     
-    return self._connection.PrefixURL(url)
-  
   def url(self):
     return self._spec.url
 
@@ -139,6 +146,8 @@ class ApiMethod(object):
   def __call__(self, default = None, **params):
     """
       Make the specified call to the Twitter API.
+
+      Raises requests.exceptions.HTTPError if an HTTP error occurred.
     """
     # Options that will be used during execution
     spec = self._spec
@@ -155,13 +164,15 @@ class ApiMethod(object):
         params[spec.container_id] = self._container.id
 
       if spec.post:
-        result = self._connection.FetchUrl(
+        result = self._connection.post(
           self._prepare_url(params), 
-          post_data=params)
+          data=params)
       else:
-        result = self._connection.FetchUrl(
+        result = self._connection.get(
           self._prepare_url(params), 
-          parameters=params)
+          params=params)
+
+      TwitterException.raise_for_response(result) # Raises an HTTPError if needed.
 
       return self._process_result(result)
 
@@ -201,10 +212,19 @@ class Api(object):
 
     For a full specification of the parts of the API implemented here, please see api.yaml
   """
-  def __init__(self, connection=None, specification = None):
+
+  BASE_URL = "https://api.twitter.com/1.1"
+
+  def __init__(self, connection=None, specification = None , base_url = None):
     self._model_apis = {}
 
     connection = connection if connection else config_connection()
+
+    # Set the default URL for the twitter API we're using.
+    if base_url == None:
+      self._base_url = Api.BASE_URL
+    else:
+      self._base_url = base_url
 
     if specification == None:
       with closing(open_data("api.yaml")) as f:
@@ -236,3 +256,6 @@ class Api(object):
         setattr(target, method, api_object)
 
     return target
+
+  def _prefix_url(self, url):
+    return '%s/%s.json' % (self._base_url, url)

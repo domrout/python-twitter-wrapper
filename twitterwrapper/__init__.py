@@ -16,6 +16,7 @@
 
 from _api import Api
 from _connection import Connection
+from twitter_exception import TwitterException
 import _utils
 import models
 import access_tokens
