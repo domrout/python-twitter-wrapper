@@ -30,7 +30,6 @@ class TwitterException(Exception):
 	def raise_for_response(result):
 		"""Inspects the given result and raises an exception if needed"""
 		# Don't do anything if we have the right status code.
-		print result.status_code
 		if result.status_code != 200:
 			try: 
 				result_json = result.json()
