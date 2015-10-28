@@ -27,9 +27,10 @@ from contextlib import closing
 from _connection import Connection
 from twitter_exception import TwitterException
 from access_tokens import config_connection
-import anyjson, yaml, string, models, os, sys
+import anyjson, yaml, string, models, os, sys, datetime
 from copy import copy
 from _utils import *
+
 
 class _ApiMethodSpec(object):
   def __init__(self,
@@ -109,11 +110,12 @@ class ApiMethod(object):
       setattr(self, spec.method, ApiMethod(connection, api, spec, container))
 
   def _process_result(self, result):
+    self._api.limit_remaining = int(result.headers["X-Rate-Limit-Limit"])
+    self._api.limit_reset = datetime.datetime.fromtimestamp(float(result.headers["X-Rate-Limit-Reset"]))
+
     result = result.json()
 
     # if errors in result:
-
-
     if isinstance(result, dict) and "previous_cursor" in result:
       return models.ResultsPage(result, self._api)
 
@@ -231,6 +233,8 @@ class Api(object):
         specification = yaml.load(f)
 
     self._connection = connection
+    self.limit_remaining = None
+    self.limit_reset = None
 
     # Now look through all immediate attributes
     for attribute, value in specification.iteritems():
