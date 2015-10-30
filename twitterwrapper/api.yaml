@@ -64,6 +64,9 @@ statuses:
     show:
       url: statuses/show
       default_param: id
+    lookup:
+      url: statuses/lookup
+      default_param: id
     update:
       post: true
       default_param: status
