@@ -110,17 +110,19 @@ class ApiMethod(object):
       setattr(self, spec.method, ApiMethod(connection, api, spec, container))
 
   def _process_result(self, result):
-    self._api.limit_remaining = int(result.headers["X-Rate-Limit-Remaining"])
-    self._api.limit = int(result.headers["X-Rate-Limit-Limit"])
+    try:
+      self._api.limit_remaining = int(result.headers["X-Rate-Limit-Remaining"])
+      self._api.limit = int(result.headers["X-Rate-Limit-Limit"])
 
-    self._api.limit_reset = datetime.datetime.fromtimestamp(float(result.headers["X-Rate-Limit-Reset"]))
-
+      self._api.limit_reset = datetime.datetime.fromtimestamp(float(result.headers["X-Rate-Limit-Reset"]))
+    except KeyError:
+      pass # Didn't get rate limiting headers. No big.
     result = result.json()
 
     # if errors in result:
     if isinstance(result, dict) and "previous_cursor" in result:
       return models.ResultsPage(result, self._api)
-
+r
     if self._spec.model == None:
       return result
     else:     
