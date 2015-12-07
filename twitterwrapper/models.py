@@ -79,7 +79,7 @@ class _ApiModel(object):
     return result
 
   def __repr__(self):
-    attr_str = [a + ":" + repr(v) for a, v in self.creation_attrs.iteritems()]
+    attr_str = [a + ":" + repr(v) for a, v in self.to_dict().iteritems()]
     attr_str = [a for a in attr_str if a < 140]
     attr_str = ", ".join(attr_str)
 
