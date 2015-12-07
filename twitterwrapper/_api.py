@@ -22,12 +22,13 @@
 
 """
 
+import json, yaml, string, models, os, sys, datetime
 from functools import partial
 from contextlib import closing
 from _connection import Connection
 from twitter_exception import TwitterException
 from access_tokens import config_connection
-import anyjson, yaml, string, models, os, sys, datetime
+from urlparse import urlparse
 from copy import copy
 from _utils import *
 
@@ -36,6 +37,8 @@ class _ApiMethodSpec(object):
   def __init__(self,
       method,
       url = None, 
+      base_url = None,
+      streaming = None,
       doc = None,
       model = None, 
       contains = dict(), 
@@ -47,7 +50,9 @@ class _ApiMethodSpec(object):
     ):
 
     self.method   = method     
-    self.url  = url          
+    self.url  = url     
+    self.base_url  = base_url          
+    self.streaming = streaming     
     self.doc   = doc          
     self.model  =  model        
     self.default_param   = default_param
@@ -95,7 +100,6 @@ class ApiMethod(object):
       connection, 
       api,
       spec, 
-      baseurl = None,
       container = None):
     self._api = api # needed to bless objects
     self._connection = connection
@@ -110,17 +114,25 @@ class ApiMethod(object):
       setattr(self, spec.method, ApiMethod(connection, api, spec, container))
 
   def _process_result(self, result):
-    try:
-      self._api.limit_remaining = int(result.headers["X-Rate-Limit-Remaining"])
-      self._api.limit = int(result.headers["X-Rate-Limit-Limit"])
-      self._api.limit_reset = datetime.datetime.fromtimestamp(float(result.headers["X-Rate-Limit-Reset"]))
-    except KeyError:
-      self._api.limit_remaining = None
-      self._api.limit = None
-      self._api.limit_reset = None
-    result = result.json()
+    self._api.limit_remaining = None
+    self._api.limit = None
+    self._api.limit_reset = None
 
-    # if errors in result:
+    if not self._spec.streaming:
+      try:
+        self._api.limit_remaining = int(result.headers["X-Rate-Limit-Remaining"])
+        self._api.limit = int(result.headers["X-Rate-Limit-Limit"])
+        self._api.limit_reset = datetime.datetime.fromtimestamp(float(result.headers["X-Rate-Limit-Reset"]))
+      except KeyError: # Ignore any errors from trying to get headers
+        pass 
+
+      result = result.json()
+    elif result.strip():
+      # Check that the result is not empty.
+      result = json.loads(result)
+    else:
+      return None
+
     if isinstance(result, dict) and "previous_cursor" in result:
       return models.ResultsPage(result, self._api)
 
@@ -142,7 +154,7 @@ class ApiMethod(object):
 
     url = url % p
     # Add the part of the URL for the twitter endpoint.
-    return self._api._prefix_url(url)
+    return self._api._prefix_url(url, self._spec.base_url)
     
   def url(self):
     return self._spec.url
@@ -170,18 +182,56 @@ class ApiMethod(object):
       if self._container and spec.container_id:
         params[spec.container_id] = self._container.id
 
-      if spec.post:
-        result = self._connection.post(
-          self._prepare_url(params), 
-          data=params)
+      # Do something different if we're streaming
+      if spec.streaming:
+        return self._stream(self._prepare_url(params), 
+            params, spec.post)
       else:
-        result = self._connection.get(
-          self._prepare_url(params), 
-          params=params)
+        if spec.post:
+          result = self._connection.post(
+            self._prepare_url(params), 
+            data=params)
+        else:
+          result = self._connection.get(
+            self._prepare_url(params), 
+            params=params)
 
-      TwitterException.raise_for_response(result) # Raises an HTTPError if needed.
+        TwitterException.raise_for_response(result) # Raises an HTTPError if needed.
 
-      return self._process_result(result)
+        return self._process_result(result)
+
+  def _stream(self, url, params, post):
+    continue_streaming = True
+    timeout = params.pop("timeout", None)
+    yield_exceptions = params.pop("ignore_exceptions", False)
+
+    while continue_streaming == True:
+      try:
+        if post:
+          request = self._connection.post(
+                self._prepare_url(params), 
+                data=params,
+                stream = True, 
+                timeout = timeout)
+        else:
+          request = self._connection.post(
+                self._prepare_url(params), 
+                params=params,
+                stream = True, 
+                timeout = timeout)
+
+        TwitterException.raise_for_response(request)
+
+        for line in request.iter_lines():
+          result = self._process_result(line)
+          if result is not None:
+            yield result
+      except Exception as e:
+        if yield_exceptions:
+          yield e
+        else:
+          raise
+
 
   def __repr__(self):
     if self._spec.url:
@@ -228,12 +278,9 @@ class Api(object):
     connection = connection if connection else config_connection()
 
     # Set the default URL for the twitter API we're using.
-    if base_url == None:
-      self._base_url = Api.BASE_URL
-    else:
-      self._base_url = base_url
+    self._base_url = Api.BASE_URL if base_url is None else base_url
 
-    if specification == None:
+    if specification is None:
       with closing(open_data("api.yaml")) as f:
         specification = yaml.load(f)
 
@@ -266,5 +313,6 @@ class Api(object):
 
     return target
 
-  def _prefix_url(self, url):
-    return '%s/%s.json' % (self._base_url, url)
+  def _prefix_url(self, url, base_url = None):
+    base_url = self._base_url if base_url is None else base_url
+    return '%s/%s.json' % (base_url, url)

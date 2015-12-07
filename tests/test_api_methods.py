@@ -196,7 +196,6 @@ class RequestTests(ApiMethodTests):
             {"id":1234}
         )
 
-
     def test_default_param_other(self):
         self.api.with_default_param("boxesofbeans")
 
