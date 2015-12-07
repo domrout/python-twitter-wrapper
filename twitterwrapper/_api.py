@@ -110,10 +110,15 @@ class ApiMethod(object):
       setattr(self, spec.method, ApiMethod(connection, api, spec, container))
 
   def _process_result(self, result):
-    self._api.limit_remaining = int(result.headers["X-Rate-Limit-Remaining"])
-    self._api.limit = int(result.headers["X-Rate-Limit-Limit"])
+    try:
+      self._api.limit_remaining = int(result.headers["X-Rate-Limit-Remaining"])
+      self._api.limit = int(result.headers["X-Rate-Limit-Limit"])
 
-    self._api.limit_reset = datetime.datetime.fromtimestamp(float(result.headers["X-Rate-Limit-Reset"]))
+      self._api.limit_reset = datetime.datetime.fromtimestamp(float(result.headers["X-Rate-Limit-Reset"]))
+    except KeyError:
+      self._api.limit_remaining = None
+      self._api.limit = None
+      self._api.limit_reset = None
 
     result = result.json()
 

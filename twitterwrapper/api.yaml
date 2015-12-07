@@ -269,6 +269,18 @@ lists:
         show:
           url: lists/members/show 
           default_param: user_id
+        create: 
+          url: lists/members/create
+          post: true
+        create_all: 
+          url: lists/members/create_all
+          post: true
+        destroy:
+          url: lists/members/destroy
+          post: true
+        destroy_all:
+          url: lists/members/destroy_all
+          post: true
     subscriptions:
       url: lists/subscriptions
       default_param: user_id
