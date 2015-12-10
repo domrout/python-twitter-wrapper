@@ -166,7 +166,9 @@ class ApiMethod(object):
     """
       Make the specified call to the Twitter API.
 
-      Raises requests.exceptions.HTTPError if an HTTP error occurred.
+      Raises requests.exceptions.RequestException if a request was failed. Usually you should retry.
+
+      Raises a twitterwrapper.TwitterException if Twitter doesn't want to talk to us.
     """
     # Options that will be used during execution
     spec = self._spec
@@ -183,22 +185,25 @@ class ApiMethod(object):
         params[spec.container_id] = self._container.id
 
       # Do something different if we're streaming
-      if spec.streaming:
-        return self._stream(self._prepare_url(params), 
-            params, spec.post)
-      else:
-        if spec.post:
-          result = self._connection.post(
-            self._prepare_url(params), 
-            data=params)
+      try:  
+        if spec.streaming:
+          return self._stream(self._prepare_url(params), 
+              params, spec.post)
         else:
-          result = self._connection.get(
-            self._prepare_url(params), 
-            params=params)
+          if spec.post:
+            result = self._connection.post(
+              self._prepare_url(params), 
+              data=params)
+          else:
+            result = self._connection.get(
+              self._prepare_url(params), 
+              params=params)
 
-        TwitterException.raise_for_response(result) # Raises an HTTPError if needed.
-
+        TwitterException.raise_for_response(result) # Raises an exception if needed.
         return self._process_result(result)
+
+      except OpenSSL.SSL.SysCallError as e:
+        raise requests.exceptions.SSLError(e)
 
   def _stream(self, url, params, post):
     continue_streaming = True

@@ -54,4 +54,3 @@ class StreamDisconnectException(TwitterException):
 	@staticmethod
 	def raise_for_response(result, api=None, **params):
 		raise StreamDisconnectException(result["reason"], result["code"])
-
