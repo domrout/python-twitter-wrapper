@@ -98,6 +98,8 @@ class SearchResult(_ApiModel):
   def results(self):
     # For version 1.1 compatibilitiy
     return self.statuses
+  def __iter__(self):
+    return self.statuses.__iter__()
 
   def __repr__(self):
     return "<Search with %d results>" % len(self.statuses)
