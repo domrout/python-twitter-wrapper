@@ -110,6 +110,12 @@ search:
   model: SearchResult
   url: search/tweets
   default_param: q
+  contains:
+    tweets:
+      model: SearchResult
+      url: search/tweets
+      default_param: q
+
 
 direct_messages:
   model: DirectMessage
