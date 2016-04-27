@@ -123,7 +123,8 @@ class ApiMethod(object):
       try:
         self._api.limit_remaining = int(result.headers["X-Rate-Limit-Remaining"])
         self._api.limit = int(result.headers["X-Rate-Limit-Limit"])
-        self._api.limit_reset = datetime.datetime.fromtimestamp(float(result.headers["X-Rate-Limit-Reset"]))
+        self._api.limit_reset = datetime.datetime.utcfromtimestamp(float(result.headers["X-Rate-Limit-Reset"]))
+        print self._api.limit_reset
       except KeyError: # Ignore any errors from trying to get headers
         pass 
 
