@@ -16,7 +16,7 @@
 
 """Provides empty classes for the twitter data models"""
 
-import urlparse, urllib, anyjson, sys
+import urlparse, urllib, anyjson, sys, pprint
 from twitter_exception import StreamDisconnectException
 from functools import partial
 import oauth2 as oauth
@@ -84,6 +84,7 @@ class _ApiModel(object):
     attr_str = ", ".join(attr_str)
 
     return "<%s %s>" % (self.__class__.__name__, attr_str)
+
 
 class User(_ApiModel):  
   def custom_attrs(self):

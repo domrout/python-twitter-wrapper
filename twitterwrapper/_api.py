@@ -31,6 +31,7 @@ from access_tokens import config_connection
 from urlparse import urlparse
 from copy import copy
 from _utils import *
+import OpenSSL
 
 
 class _ApiMethodSpec(object):
