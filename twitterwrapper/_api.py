@@ -30,9 +30,13 @@ from twitter_exception import TwitterException
 from access_tokens import config_connection
 from urlparse import urlparse
 from copy import copy
+import requests
 from _utils import *
-import OpenSSL
-
+try: 
+  import OpenSSL
+  SysCallError = OpenSSL.SSL.SysCallError 
+except ImportError:
+  SysCallError = requests.exceptions.SSLError
 
 class _ApiMethodSpec(object):
   def __init__(self,
@@ -203,7 +207,7 @@ class ApiMethod(object):
         TwitterException.raise_for_response(result) # Raises an exception if needed.
         return self._process_result(result)
 
-      except OpenSSL.SSL.SysCallError as e:
+      except SysCallError as e:
         raise requests.exceptions.SSLError(e)
 
   def _stream(self, url, params, post):
