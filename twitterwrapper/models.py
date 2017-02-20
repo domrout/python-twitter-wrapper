@@ -24,7 +24,7 @@ from future.utils import iteritems
 import oauth2 as oauth
 try: 
   import urlparse
-except ModuleNotFoundError:
+except ImportError:
   import urllib.parse as urlparse
 
 class _ApiModel(object):

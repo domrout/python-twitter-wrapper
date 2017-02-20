@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='TwitterWrapper',
-      version='0.3',
+      version='1.0',
       description='A slimmer wrapper to the Twitter API',
       author='Dominic Rout',
       author_email='d.rout@sheffield.ac.uk',

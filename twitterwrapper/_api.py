@@ -37,7 +37,7 @@ from ._utils import *
 
 try: 
   import urlparse
-except ModuleNotFoundError:
+except ImportError:
   import urllib.parse as urlparse
 
 try: 

@@ -37,7 +37,7 @@ from ._connection import Connection
 
 try: 
   import urlparse
-except ModuleNotFoundError:
+except ImportError:
   import urllib.parse as urlparse
 
 DEFAULT_ACCESS_TOKENS_FILE = "access_tokens.yaml"
