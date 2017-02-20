@@ -31,8 +31,14 @@
     "consumer_secret": "INSERT_SECRET_HERE"
   }
 """
-import oauth2, urlparse, urllib, yaml
-from _connection import Connection
+from __future__ import print_function
+import oauth2, urllib, yaml
+from ._connection import Connection
+
+try: 
+  import urlparse
+except ModuleNotFoundError:
+  import urllib.parse as urlparse
 
 DEFAULT_ACCESS_TOKENS_FILE = "access_tokens.yaml"
 
@@ -186,7 +192,7 @@ class AuthenticationProcess(object):
       self.request_tokens[oauth_token] = request_token
       return "%s?oauth_token=%s" % (self.authorize_url, oauth_token)
     else:
-      print content
+      print(content)
       if "Desktop applications only support the oauth_callback" in content:
         raise Exception("Twitter thinks this is a desktop app. Set a fake callback URL for the app at dev.twitter.com")
       else:

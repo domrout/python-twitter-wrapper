@@ -14,11 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from _api import Api
-from _connection import Connection
-from twitter_exception import TwitterException
-import _utils
-import models
-import access_tokens
+from ._api import Api
+from ._connection import Connection
+from .twitter_exception import TwitterException
+from ._utils import *
+from .models import *
+from .access_tokens import *
 
-from access_tokens import config_connection
+from .access_tokens import config_connection

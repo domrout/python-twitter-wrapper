@@ -1,12 +1,24 @@
-import unittest, yaml, twitterwrapper
+import unittest, yaml, twitterwrapper, os
 from functools import partial
-
+from attrdict import AttrDict
 class DummyConnection:
     """Replaces some of the methods of the connection object for testing purposes"""
     def __init__(self):
-        self.result = dict()
+        self.response = AttrDict(
+            {
+            "status_code": 200, 
+            "headers": {
+                "X-Rate-Limit-Remaining": 100
+            },
+            "json": lambda: {}})
 
-    def FetchUrl(self, url, **other_params):
+    def get(self, url, **other_params):
+        self.lastUrl = url
+        self.lastParams = other_params
+
+        return self.get_result()
+
+    def post(self, url, **other_params):
         self.lastUrl = url
         self.lastParams = other_params
 
@@ -19,13 +31,20 @@ class DummyConnection:
         return url
 
     def set_result(self, result):
-        self.result = result
+        response = AttrDict()
+        response["status_code"] = 200
+        response["headers"] = {
+                "X-Rate-Limit-Remaining": 100
+            }
+
+        response["json"] = lambda: result
+        self.response = response
 
     def get_result(self):
-        return self.result
+        return self.response
 
     def is_url(self, url):
-        return self.lastUrl == url
+        return self.lastUrl== twitterwrapper.Api.BASE_URL + "/" + url + ".json"
 
 class ApiMethodTests(unittest.TestCase):
     API_FILE = "tests/fixtures/api.yaml"
@@ -55,7 +74,7 @@ class ApiMethodTests(unittest.TestCase):
         
 class YAMLLoadingTests(ApiMethodTests):
     """Tests the loading and correct use of the API spec files"""
-    API_FILE = "tests/fixtures/yaml_loading_tests.yaml" # I'm so certain this wouldn't work in another language.
+    API_FILE = "tests/fixtures/yaml_loading_tests.yaml" 
 
     def test_shallow_loading(self):
         self.assertTrue(hasattr(self.api, 'shallow_method'))
@@ -107,20 +126,20 @@ class YAMLLoadingTests(ApiMethodTests):
         parent_url = self.dummy.lastUrl
 
         # Assert that the last request was as described
-        self.assertTrue("post_data" in self.dummy.lastParams)
-        self.assertTrue("def_param" in self.dummy.lastParams["post_data"])
-        self.assertTrue("some_param" in self.dummy.lastParams["post_data"])
+        self.assertTrue("data" in self.dummy.lastParams)
+        self.assertTrue("def_param" in self.dummy.lastParams["data"])
+        self.assertTrue("some_param" in self.dummy.lastParams["data"])
 
-        self.assertEqual(self.dummy.lastParams["post_data"]["some_param"], 0)
+        self.assertEqual(self.dummy.lastParams["data"]["some_param"], 0)
 
         child(1, some_param=0)
         # Check that the child wasn't still set as POST
-        self.assertFalse("post_data" in self.dummy.lastParams)
-        self.assertTrue("parameters" in self.dummy.lastParams)
+        self.assertFalse("data" in self.dummy.lastParams)
+        self.assertTrue("params" in self.dummy.lastParams)
         # Also check that default parameter wasn't still set.
-        self.assertFalse("def_param" in self.dummy.lastParams["parameters"])
-        self.assertTrue("some_param" in self.dummy.lastParams["parameters"])
-        self.assertEqual(self.dummy.lastParams["parameters"]["some_param"], 0)
+        self.assertFalse("def_param" in self.dummy.lastParams["params"])
+        self.assertTrue("some_param" in self.dummy.lastParams["params"])
+        self.assertEqual(self.dummy.lastParams["params"]["some_param"], 0)
 
     def test_dont_inherit_url(self):
         self.api.not_inheriting_url()
@@ -133,22 +152,22 @@ class RequestTests(ApiMethodTests):
     def test_basic(self):
         self.api.basic()
         self.assertUrl("basic")
-        self.assertEquals(self.dummy.lastParams["parameters"], dict())
-        self.assertFalse("post_data" in self.dummy.lastParams)
+        self.assertEquals(self.dummy.lastParams["params"], dict())
+        self.assertFalse("data" in self.dummy.lastParams)
 
     def test_basic_post(self):
         self.api.post_basic()
         self.assertUrl("post_basic")
 
-        self.assertEquals(self.dummy.lastParams["post_data"], dict())
-        self.assertFalse("parameters" in self.dummy.lastParams)
+        self.assertEquals(self.dummy.lastParams["data"], dict())
+        self.assertFalse("params" in self.dummy.lastParams)
 
     def test_extra_params(self):
         self.api.basic(param="hello")
         self.assertUrl("basic")
 
         self.assertEquals(
-            self.dummy.lastParams["parameters"], 
+            self.dummy.lastParams["params"], 
             {"param":"hello"})
 
     def test_extra_params_post(self):
@@ -156,7 +175,7 @@ class RequestTests(ApiMethodTests):
         self.assertUrl("post_basic")
         
         self.assertEquals(
-            self.dummy.lastParams["post_data"], 
+            self.dummy.lastParams["data"], 
             {"param":"hello"})
 
     def test_url_matching(self):
@@ -192,7 +211,7 @@ class RequestTests(ApiMethodTests):
         self.api.with_default_param_id(1234)
         self.assertUrl("with_default_param_id")
         self.assertEquals(
-            self.dummy.lastParams["parameters"], 
+            self.dummy.lastParams["params"], 
             {"id":1234}
         )
 
@@ -201,7 +220,7 @@ class RequestTests(ApiMethodTests):
 
         self.assertUrl("with_default_param")
         self.assertEquals(
-            self.dummy.lastParams["parameters"], 
+            self.dummy.lastParams["params"], 
             {"def_param":"boxesofbeans"}
         )
 
@@ -209,9 +228,9 @@ class RequestTests(ApiMethodTests):
         self.api.with_default_param_in_url("boxesofbeans")
         
         self.assertUrl("with_default_param/boxesofbeans")
-        # IT would be nice to remove parameters that were used in the URL.
+        # IT would be nice to remove params that were used in the URL.
         # But doing so would heavily complicate the YAML syntax for the API:
-        # self.assertEquals(self.dummy.lastParams["parameters"], dict())
+        # self.assertEquals(self.dummy.lastParams["params"], dict())
 
 class ModelBlessingTests(ApiMethodTests):
     """Tests that models are blessed properly."""
@@ -229,8 +248,8 @@ class ModelBlessingTests(ApiMethodTests):
         self.assertUrl("shallow_call")
 
         # Shouldn't be supplying any extra data at this point.
-        self.assertEquals(self.dummy.lastParams["parameters"], dict())
-        self.assertFalse("post_data" in self.dummy.lastParams)
+        self.assertEquals(self.dummy.lastParams["params"], dict())
+        self.assertFalse("data" in self.dummy.lastParams)
 
     def test_attachment_deep(self):
         self.status.deep_call_parent.deep_call_child()
@@ -239,20 +258,20 @@ class ModelBlessingTests(ApiMethodTests):
     def test_container_id_shallow(self):
         self.status.post_with_container_id()
         self.assertUrl("post_with_container_id")
-        self.assertEqual(self.dummy.lastParams["post_data"]["status_id"], self.status.id)
+        self.assertEqual(self.dummy.lastParams["data"]["status_id"], self.status.id)
 
         self.status.get_with_container_id()
         self.assertUrl("get_with_container_id")
-        self.assertEqual(self.dummy.lastParams["parameters"]["status_id"], self.status.id)
+        self.assertEqual(self.dummy.lastParams["params"]["status_id"], self.status.id)
 
     def test_container_id_deep(self):
         self.status.deep_call_parent.deep_post_with_container_id()
         self.assertUrl("deep_post_with_container_id")
-        self.assertEqual(self.dummy.lastParams["post_data"]["status_id"], self.status.id)
+        self.assertEqual(self.dummy.lastParams["data"]["status_id"], self.status.id)
 
         self.status.deep_call_parent.deep_get_with_container_id()
         self.assertUrl("deep_get_with_container_id")
-        self.assertEqual(self.dummy.lastParams["parameters"]["status_id"], self.status.id)
+        self.assertEqual(self.dummy.lastParams["params"]["status_id"], self.status.id)
 
     def test_id_in_url(self):
         self.status.should_insert_id()

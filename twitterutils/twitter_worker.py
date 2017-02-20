@@ -3,6 +3,7 @@ import twitterwrapper, sys, string, re, anyjson, argparse, time, urllib2, os
 from Queue import Queue, Empty
 from threading import Thread, Event
 from itertools import izip
+from future.utils import iteritems
 
 
 class TwitterDispatcher(Thread):
@@ -45,7 +46,7 @@ class TwitterDispatcher(Thread):
     
   def start_workers(self):
       """Creates worker threads for each authentication available."""
-      for username, auth in self.token_store.tokens.iteritems():
+      for username, auth in iteritems(self.token_store.tokens):
           flw = TwitterWorker(twitterwrapper.Api(auth["connection"]), 
             username, 
             self.completionManager,

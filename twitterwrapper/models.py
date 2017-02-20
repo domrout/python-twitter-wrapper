@@ -16,11 +16,16 @@
 
 """Provides empty classes for the twitter data models"""
 
-import urlparse, urllib, anyjson, sys, pprint
-from twitter_exception import StreamDisconnectException
+import urllib, anyjson, sys, pprint
+from .twitter_exception import StreamDisconnectException
 from functools import partial
-import oauth2 as oauth
+from future.utils import iteritems
 
+import oauth2 as oauth
+try: 
+  import urlparse
+except ModuleNotFoundError:
+  import urllib.parse as urlparse
 
 class _ApiModel(object):
   """Base class for a model which can be used to contain twitter data.
@@ -38,7 +43,7 @@ class _ApiModel(object):
 
     self.creation_attrs = set()
 
-    for attribute, value in data.iteritems():
+    for attribute, value in iteritems(data):
       if attribute in custom_attrs:
         constructor = custom_attrs[attribute] 
         setattr(self, attribute, constructor(value))
@@ -67,8 +72,8 @@ class _ApiModel(object):
         if hasattr(v, "to_dict"):
           v = v.to_dict()
 
-        if hasattr(v, "iteritems"):
-          v = dict((a, transform(b)) for (a, b) in v.iteritems())
+        if hasattr(v, "__getitem__"):
+          v = dict((a, transform(b)) for (a, b) in iteritems(v))
         elif hasattr(v, "__iter__"):
           v = [transform(w) for w in v]
 
@@ -79,7 +84,7 @@ class _ApiModel(object):
     return result
 
   def __repr__(self):
-    attr_str = [a + ":" + repr(v) for a, v in self.to_dict().iteritems()]
+    attr_str = [a + ":" + repr(v) for a, v in iteritems(self.to_dict())]
     attr_str = [a for a in attr_str if a < 140]
     attr_str = ", ".join(attr_str)
 

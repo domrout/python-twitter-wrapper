@@ -21,7 +21,7 @@ import requests
 class TwitterException(Exception):
 	BAD_AUTH_CODES = {32, 64, 226, 231, 89} # These indicate a problem with the account in use
 	BAD_TARGET_CODES = 	{179, 34, 17} # These indicate a problem with the target itself.
- 	RETRY_CODES = {130, 131, 88} # There are problems with the API or rate limit. Try later.
+	RETRY_CODES = {130, 131, 88} # There are problems with the API or rate limit. Try later.
 
 	def __init__(self, message, code):
 		self.message = message

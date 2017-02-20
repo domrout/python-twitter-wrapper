@@ -4,6 +4,8 @@
 
 import twitterwrapper, yaml,re 
 
+from future.utils import iteritems
+
 DOCUMENT_YAML = "twitterwrapper/api.yaml"
 OUTPUT_API_LOCATION = "API.markdown"
 OUTPUT_MODEL_LOCATION = "MODELS.markdown"
@@ -72,7 +74,7 @@ def output_endpoint(f, endpoint, content, nesting = 2, path_to=["api"], model = 
 			print >> f, ""
 
 	if "contains" in content:		
-		for k, v in content["contains"].iteritems():
+		for k, v in iteritems(content["contains"]):
 			output_endpoint(f, k, v, 
 				nesting = nesting + 1, 
 				path_to=path_to,

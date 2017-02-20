@@ -22,16 +22,24 @@
 
 """
 
-import json, yaml, string, models, os, sys, datetime
+import json, yaml, string, os, sys, datetime
 from functools import partial
 from contextlib import closing
-from _connection import Connection
-from twitter_exception import TwitterException
-from access_tokens import config_connection
-from urlparse import urlparse
+from ._connection import Connection
+from .twitter_exception import TwitterException
+from .access_tokens import config_connection
+from future.utils import iteritems
+
+from . import models
 from copy import copy
 import requests
-from _utils import *
+from ._utils import *
+
+try: 
+  import urlparse
+except ModuleNotFoundError:
+  import urllib.parse as urlparse
+
 try: 
   import OpenSSL
   SysCallError = OpenSSL.SSL.SysCallError 
@@ -67,7 +75,7 @@ class _ApiMethodSpec(object):
 
     self.contains = list()
 
-    for name, structure in contains.iteritems():
+    for name, structure in iteritems(contains):
       self.add_child(name, structure)
 
   def initialize_model(self):
@@ -299,14 +307,14 @@ class Api(object):
     self.limit_reset = None
 
     # Now look through all immediate attributes
-    for attribute, value in specification.iteritems():
+    for attribute, value in iteritems(specification):
       if hasattr(models, attribute):
         # The element matches a model object, so it will be used to bless objects of that type.
         target_class = getattr(models, attribute)
         self._model_apis[target_class] = dict()
 
         # Instantiate the specificatons for all the relevant methods
-        for inner_attribute, inner_value in value.iteritems():
+        for inner_attribute, inner_value in iteritems(value):
           inner_value["method"] = inner_attribute
           self._model_apis[target_class][inner_attribute] = _ApiMethodSpec(**inner_value)
       else:
@@ -317,7 +325,7 @@ class Api(object):
   def _bless(self, target):
     """Will 'bless' an object with any API calls matching its class"""
     if target.__class__ in self._model_apis:
-      for method, method_spec in self._model_apis[target.__class__].iteritems():
+      for method, method_spec in iteritems(self._model_apis[target.__class__]):
         api_object = ApiMethod(self._connection, self, method_spec, target)
         setattr(target, method, api_object)
 
