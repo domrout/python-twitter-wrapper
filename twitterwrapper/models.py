@@ -72,7 +72,7 @@ class _ApiModel(object):
         if hasattr(v, "to_dict"):
           v = v.to_dict()
 
-        if hasattr(v, "__getitem__"):
+        if hasattr(v, "items"):
           v = dict((a, transform(b)) for (a, b) in iteritems(v))
         elif hasattr(v, "__iter__"):
           v = [transform(w) for w in v]
