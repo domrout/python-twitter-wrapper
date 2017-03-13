@@ -86,7 +86,7 @@ class AccessTokenStore(object):
       else:
         raise Exception("Screen name not found in access token file")
     elif len(self.tokens) > 0:
-      screen_name = self.tokens.keys()[0]
+      screen_name = next(iter(self.tokens))
       return self.tokens[screen_name]
     else:
       raise Exception("No access tokens available")
@@ -206,10 +206,10 @@ class AuthenticationProcess(object):
 
       Returns a complete set of auth data."""
 
-    # Hack to maintain backwards compatibility when only one token is used.
     if oauth_token == None:
       try:
-        oauth_token = self.request_tokens.keys()[0]
+        # Choose a token effectively at random if there's more than one available.
+        oauth_token = next(iter(self.request_tokens))
       except IndexError:
         raise Exception("No access token exists currently")
 
